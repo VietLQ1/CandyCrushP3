@@ -233,7 +233,7 @@ export class GameScene extends Phaser.Scene {
     this.secondSelectedTile = undefined;
   }
 
-  private removeTileGroup(matches: any): void {
+  private removeTileGroup(matches: Tile[][]): void {
     // Loop through all the matches and remove the associated tiles
     for (var i = 0; i < matches.length; i++) {
       var tempArr = matches[i];
@@ -252,7 +252,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private getTilePos(tileGrid: Tile[][], tile: Tile): any {
+  private getTilePos(tileGrid: Tile[][], tile: Tile): { x: number; y: number} {
     let pos = { x: -1, y: -1 };
 
     //Find the position of a specific tile in the grid
