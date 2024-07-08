@@ -59,7 +59,7 @@ export class GameScene extends Phaser.Scene {
     let newTile = new Tile({
       scene: this,
       x: x * CONST.tileWidth,
-      y: y * CONST.tileHeight - 64,
+      y: 0 - 64,
       texture: randomTileType,
       frame: 5
     });
@@ -112,6 +112,12 @@ export class GameScene extends Phaser.Scene {
         }
         this.firstSelectedTile.play('idle');
         this.secondSelectedTile!.play('idle');
+        if (this.firstSelectedTile !== undefined) {
+          this.firstSelectedTile = undefined;
+        }
+        if (this.secondSelectedTile !== undefined) {
+          this.secondSelectedTile = undefined;
+        }
       }
     }
   }
@@ -203,32 +209,56 @@ export class GameScene extends Phaser.Scene {
     // Loop through each column starting from the left
     for (let y = this.tileGrid!.length - 1; y > 0; y--) {
       // Loop through each tile in column from bottom to top
-      for (let x = this.tileGrid![y].length - 1; x > 0; x--) {
+      for (let x = this.tileGrid![y].length - 1; x >= 0; x--) {
         // If this space is blank, but the one above it is not, move the one above down
-        if (
-          this.tileGrid![y][x] === undefined &&
-          this.tileGrid![y - 1][x] !== undefined
-        ) 
+        for (let i = 1; y - i >= 0; i++)
         {
-          // Move the tile above down one
-          let tempTile = this.tileGrid![y - 1][x];
-          this.tileGrid![y][x] = tempTile;
-          this.tileGrid![y - 1][x] = undefined as any;
+          if (this.tileGrid![y][x] === undefined && this.tileGrid![y - i][x] !== undefined) 
+          {
+            // Move the tile above down one
+            let tempTile = this.tileGrid![y - i][x];
+            this.tileGrid![y][x] = tempTile;
+            this.tileGrid![y - i][x] = undefined as any;
 
-          this.add.tween({
-            targets: tempTile,
-            y: CONST.tileHeight * y,
-            ease: 'Quintic.easeInOut',
-            duration: 500,
-            repeat: 0,
-            yoyo: false
-          });
+            this.add.tween({
+              targets: tempTile,
+              y: CONST.tileHeight * y,
+              ease: 'Quintic.easeInOut',
+              duration: 500,
+              repeat: 0,
+              yoyo: false
+            });
 
-          //The positions have changed so start this process again from the bottom
-          //NOTE: This is not set to me.tileGrid[i].length - 1 because it will immediately be decremented as
-          //we are at the end of the loop.
-          x = this.tileGrid![y].length;
+            //The positions have changed so start this process again from the bottom
+            //NOTE: This is not set to me.tileGrid[i].length - 1 because it will immediately be decremented as
+            //we are at the end of the loop.
+            x = this.tileGrid![y].length;
+          }
         }
+        // if (
+        //   this.tileGrid![y][x] === undefined &&
+        //   this.tileGrid![y - 1][x] !== undefined
+        // ) 
+        // {
+        //   // Move the tile above down one
+        //   let tempTile = this.tileGrid![y - 1][x];
+        //   this.tileGrid![y][x] = tempTile;
+        //   this.tileGrid![y - 1][x] = undefined as any;
+
+        //   this.add.tween({
+        //     targets: tempTile,
+        //     y: CONST.tileHeight * y,
+        //     ease: 'Quintic.easeInOut',
+        //     duration: 500,
+        //     repeat: 0,
+        //     yoyo: false
+        //   });
+
+        //   //The positions have changed so start this process again from the bottom
+        //   //NOTE: This is not set to me.tileGrid[i].length - 1 because it will immediately be decremented as
+        //   //we are at the end of the loop.
+        //   x = this.tileGrid![y].length;
+        // }
       }
     }
   }
