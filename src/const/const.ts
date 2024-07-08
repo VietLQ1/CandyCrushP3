@@ -22,6 +22,6 @@ export let CONST = {
     'marisa',
     'cirno',
     'remilia',
-    'flandre',
+    'sakuya',
   ]
 };

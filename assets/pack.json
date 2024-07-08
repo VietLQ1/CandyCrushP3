@@ -54,6 +54,15 @@
           "frameWidth": 64,
           "frameHeight": 64
         }
+      },
+      {
+        "type": "spritesheet",
+        "key": "sakuya",
+        "url": "./assets/images/sakuya.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
       }
     ]
   }

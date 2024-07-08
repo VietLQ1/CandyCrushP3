@@ -56,13 +56,22 @@ export class GameScene extends Phaser.Scene {
       CONST.candyTypes[Phaser.Math.RND.between(0, CONST.candyTypes.length - 1)];
 
     // Return the created tile
-    return new Tile({
+    let newTile = new Tile({
       scene: this,
       x: x * CONST.tileWidth,
-      y: y * CONST.tileHeight,
+      y: y * CONST.tileHeight - 64,
       texture: randomTileType,
       frame: 5
     });
+    this.tweens.add({
+      targets: newTile,
+      y: y * CONST.tileHeight,
+      ease: 'Quintic.easeInOut',
+      duration: 500,
+      repeat: 0,
+      yoyo: false
+    });
+    return newTile;
   }
 
   /**
@@ -88,7 +97,7 @@ export class GameScene extends Phaser.Scene {
       else {
         // So if we are here, we must have selected a second tile
         this.secondSelectedTile = gameobject;
-
+        this.secondSelectedTile!.play('selected');
         let dx =
           Math.abs(this.firstSelectedTile.x - this.secondSelectedTile!.x) /
           CONST.tileWidth;
@@ -101,6 +110,8 @@ export class GameScene extends Phaser.Scene {
           this.canMove = false;
           this.swapTiles();
         }
+        this.firstSelectedTile.play('idle');
+        this.secondSelectedTile!.play('idle');
       }
     }
   }
@@ -135,7 +146,7 @@ export class GameScene extends Phaser.Scene {
         targets: this.firstSelectedTile,
         x: this.secondSelectedTile.x,
         y: this.secondSelectedTile.y,
-        ease: 'Linear',
+        ease: 'Quintic.easeInOut',
         duration: 400,
         repeat: 0,
         yoyo: false
@@ -145,7 +156,7 @@ export class GameScene extends Phaser.Scene {
         targets: this.secondSelectedTile,
         x: this.firstSelectedTile.x,
         y: this.firstSelectedTile.y,
-        ease: 'Linear',
+        ease: 'Quintic.easeInOut',
         duration: 400,
         repeat: 0,
         yoyo: false,
