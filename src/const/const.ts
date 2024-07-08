@@ -1,8 +1,8 @@
 export let CONST = {
   score: 0,
   highscore: 0,
-  gridWidth: 6,
-  gridHeight: 6,
+  gridWidth: 7,
+  gridHeight: 7,
   tileWidth: 64,
   tileHeight: 64,
   candyTypes: [

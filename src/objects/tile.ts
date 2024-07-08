@@ -3,7 +3,7 @@ import { ImageConstructor } from '../interfaces/image.interface';
 export class Tile extends Phaser.GameObjects.Sprite {
   constructor(params: ImageConstructor) {
     super(params.scene, params.x, params.y, params.texture, params.frame);
-
+    // add tile background
     // set image settings
     this.setOrigin(0, 0);
     this.setInteractive();

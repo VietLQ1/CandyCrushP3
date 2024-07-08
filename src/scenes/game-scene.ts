@@ -4,7 +4,8 @@ import { Tile } from '../objects/tile';
 export class GameScene extends Phaser.Scene {
   // Variables
   private canMove: boolean;
-
+  // Background grid
+  private grid: Phaser.GameObjects.Image[][] | undefined;
   // Grid with tiles
   private tileGrid: Tile[][] | undefined;
 
@@ -25,6 +26,19 @@ export class GameScene extends Phaser.Scene {
     // set background color
     this.cameras.main.setBackgroundColor(0x78aade);
 
+    // Init Background Grid
+    this.grid = [];
+    for (let y = 0; y < CONST.gridHeight; y++) {
+      this.grid[y] = [];
+      for (let x = 0; x < CONST.gridWidth; x++) {
+        let tile = this.add.image(
+          x * CONST.tileWidth,
+          y * CONST.tileHeight,
+          'tileback'
+        ).setDisplaySize(CONST.tileWidth, CONST.tileHeight).setDisplayOrigin(0, 0).setAlpha(0.5);
+        this.grid[y][x] = tile;
+      }
+    }
     // Init grid with tiles
     this.tileGrid = [];
     for (let y = 0; y < CONST.gridHeight; y++) {
@@ -196,7 +210,10 @@ export class GameScene extends Phaser.Scene {
       //Fill the board with new tiles wherever there is an empty spot
       this.fillTile();
       this.tileUp();
-      this.checkMatches();
+      this.time.delayedCall(800, () => {
+        this.checkMatches();
+      });
+      // this.checkMatches();
     } else {
       // No match so just swap the tiles back to their original position and reset
       this.swapTiles();

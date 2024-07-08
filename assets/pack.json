@@ -2,6 +2,11 @@
   "preload": {
     "files": [
       {
+        "type": "image",
+        "key": "tileback",
+        "url": "./assets/images/tile-back.png"
+      },
+      {
         "type": "spritesheet",
         "key": "reimu",
         "url": "./assets/images/reimu.png",
