@@ -60,7 +60,8 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       x: x * CONST.tileWidth,
       y: y * CONST.tileHeight,
-      texture: randomTileType
+      texture: randomTileType,
+      frame: 5
     });
   }
 
@@ -76,7 +77,15 @@ export class GameScene extends Phaser.Scene {
     if (this.canMove) {
       if (!this.firstSelectedTile) {
         this.firstSelectedTile = gameobject;
-      } else {
+        this.firstSelectedTile!.play('selected');
+        //add particle around the selected tile
+      }
+      else if (this.firstSelectedTile === gameobject) {
+        // Deselect the first tile
+        this.firstSelectedTile = undefined;
+        gameobject.play('idle');
+      }
+      else {
         // So if we are here, we must have selected a second tile
         this.secondSelectedTile = gameobject;
 
@@ -188,7 +197,8 @@ export class GameScene extends Phaser.Scene {
         if (
           this.tileGrid![y][x] === undefined &&
           this.tileGrid![y - 1][x] !== undefined
-        ) {
+        ) 
+        {
           // Move the tile above down one
           let tempTile = this.tileGrid![y - 1][x];
           this.tileGrid![y][x] = tempTile;
@@ -197,8 +207,8 @@ export class GameScene extends Phaser.Scene {
           this.add.tween({
             targets: tempTile,
             y: CONST.tileHeight * y,
-            ease: 'Linear',
-            duration: 200,
+            ease: 'Quintic.easeInOut',
+            duration: 500,
             repeat: 0,
             yoyo: false
           });

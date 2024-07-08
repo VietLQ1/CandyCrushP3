@@ -3,13 +3,16 @@ import { GameScene } from './scenes/game-scene';
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Candy crush',
-  url: 'https://github.com/digitsensitive/phaser3-typescript',
   version: '0.0.1',
-  width: 520,
-  height: 700,
+  width: 512,
+  height: 576,
   type: Phaser.AUTO,
   parent: 'game',
   scene: [BootScene, GameScene],
   backgroundColor: '#de3412',
-  render: { pixelArt: false, antialias: true }
+  render: { pixelArt: true },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
 };
