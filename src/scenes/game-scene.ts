@@ -1,5 +1,6 @@
 import { CONST } from '../const/const';
 import { Tile } from '../objects/tile';
+import { TileSpecial } from '../objects/tileSpecial';
 
 export class GameScene extends Phaser.Scene {
   // Variables
@@ -126,11 +127,8 @@ export class GameScene extends Phaser.Scene {
         }
         this.firstSelectedTile.play('idle');
         this.secondSelectedTile!.play('idle');
-        if (this.firstSelectedTile !== undefined) {
-          this.firstSelectedTile = undefined;
-        }
-        if (this.secondSelectedTile !== undefined) {
-          this.secondSelectedTile = undefined;
+        if (dx > 1 || dy > 1 || (dx === 1 && dy === 1)) {
+          this.tileUp();
         }
       }
     }
@@ -206,10 +204,12 @@ export class GameScene extends Phaser.Scene {
       //Remove the tiles
       this.removeTileGroup(matches);
       // Move the tiles currently on the board into their new positions
-      this.resetTile();
+      this.time.delayedCall(300, () => {
+        this.resetTile();
+        this.fillTile();
+        this.tileUp();
+      });
       //Fill the board with new tiles wherever there is an empty spot
-      this.fillTile();
-      this.tileUp();
       this.time.delayedCall(800, () => {
         this.checkMatches();
       });
@@ -252,30 +252,6 @@ export class GameScene extends Phaser.Scene {
             x = this.tileGrid![y].length;
           }
         }
-        // if (
-        //   this.tileGrid![y][x] === undefined &&
-        //   this.tileGrid![y - 1][x] !== undefined
-        // ) 
-        // {
-        //   // Move the tile above down one
-        //   let tempTile = this.tileGrid![y - 1][x];
-        //   this.tileGrid![y][x] = tempTile;
-        //   this.tileGrid![y - 1][x] = undefined as any;
-
-        //   this.add.tween({
-        //     targets: tempTile,
-        //     y: CONST.tileHeight * y,
-        //     ease: 'Quintic.easeInOut',
-        //     duration: 500,
-        //     repeat: 0,
-        //     yoyo: false
-        //   });
-
-        //   //The positions have changed so start this process again from the bottom
-        //   //NOTE: This is not set to me.tileGrid[i].length - 1 because it will immediately be decremented as
-        //   //we are at the end of the loop.
-        //   x = this.tileGrid![y].length;
-        // }
       }
     }
   }
@@ -302,24 +278,61 @@ export class GameScene extends Phaser.Scene {
   }
 
   private removeTileGroup(matches: Tile[][]): void {
+    // console.log(matches.length);
     // Loop through all the matches and remove the associated tiles
     for (var i = 0; i < matches.length; i++) {
       var tempArr = matches[i];
-
-      for (var j = 0; j < tempArr.length; j++) {
-        let tile = tempArr[j];
-        //Find where this tile lives in the theoretical grid
-        let tilePos = this.getTilePos(this.tileGrid!, tile);
-
-        // Remove the tile from the theoretical grid
-        if (tilePos.x !== -1 && tilePos.y !== -1) {
-          tile.destroy();
-          this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
+      if (tempArr.length == 3)
+      {
+        for (var j = 0; j < tempArr.length; j++) {
+          let tile = tempArr[j];
+          //Find where this tile lives in the theoretical grid
+          let tilePos = this.getTilePos(this.tileGrid!, tile);
+  
+          // Remove the tile from the theoretical grid
+          if (tilePos.x !== -1 && tilePos.y !== -1) {
+            tile.destroy();
+            this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
+          }
         }
+      }
+      else if (tempArr.length == 4)
+      {
+        console.log('special tile 4');
+        let specialTile = new TileSpecial({
+          scene: this,
+          x: tempArr[0].x,
+          y: tempArr[0].y,
+          texture: tempArr[0].texture.key,
+          frame: 5
+        }, 'row');
+        let tilePos = this.getTilePos(this.tileGrid!, tempArr[0]);
+        this.tileGrid![tilePos.y][tilePos.x].destroy();
+        this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
+        for (var j = 1; j < tempArr.length; j++) {
+          let tilePos1 = this.getTilePos(this.tileGrid!, tempArr[j]);
+          let tile = tempArr[j];
+          this.tweens.add({
+            targets: tile,
+            x: specialTile.x,
+            y: specialTile.y,
+            duration: 250,
+            repeat: 0,
+            yoyo: false
+          }).on('complete', () => {
+            tile.destroy();
+            this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+          });
+          this.time.delayedCall(250, () => {
+            this.tileGrid![tilePos.y][tilePos.x] = specialTile;
+          });
+        }
+        console.log(this.tileGrid?[tilePos.y][tilePos.x] : 'undefined');
       }
     }
   }
 
+  
   private getTilePos(tileGrid: Tile[][], tile: Tile): { x: number; y: number} {
     let pos = { x: -1, y: -1 };
 
@@ -341,7 +354,6 @@ export class GameScene extends Phaser.Scene {
   private getMatches(tileGrid: Tile[][]): Tile[][] {
     let matches: Tile[][] = [];
     let groups: Tile[] = [];
-
     // Check for horizontal matches
     for (let y = 0; y < tileGrid.length; y++) {
       let tempArray = tileGrid[y];
@@ -411,7 +423,10 @@ export class GameScene extends Phaser.Scene {
             }
           }
       }
-      if (groups.length > 0) matches.push(groups);
+      if (groups.length > 0) 
+        {
+          matches.push(groups);
+        }
     }
 
     return matches;
