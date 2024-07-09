@@ -238,10 +238,8 @@ export class GameScene extends Phaser.Scene {
       // Loop through each tile in column from bottom to top
       for (let x = this.tileGrid![y].length - 1; x >= 0; x--) {
         // If this space is blank, but the one above it is not, move the one above down
-        for (let i = 1; y - i >= 0; i++)
-        {
-          if (this.tileGrid![y][x] === undefined && this.tileGrid![y - i][x] !== undefined) 
-          {
+        for (let i = 1; y - i >= 0; i++) {
+          if (this.tileGrid![y][x] === undefined && this.tileGrid![y - i][x] !== undefined) {
             // Move the tile above down one
             let tempTile = this.tileGrid![y - i][x];
             this.tileGrid![y][x] = tempTile;
@@ -264,15 +262,14 @@ export class GameScene extends Phaser.Scene {
         }
       }
     }
-    if(this.tweenManager.allTweens.length == 0)
-    {
+    if (this.tweenManager.allTweens.length == 0) {
       this.fillTile();
       return;
     }
     this.tweenManager.startAllTweens();
     console.log(this.tweenManager.allTweens.length)
     this.events.once('tweensComplete', () => {
-        this.fillTile();
+      this.fillTile();
     });
   }
 
@@ -290,8 +287,7 @@ export class GameScene extends Phaser.Scene {
         }
       }
     }
-    if(this.tweenManager.allTweens.length == 0)
-    {
+    if (this.tweenManager.allTweens.length == 0) {
       this.tileUp();
       this.checkMatches();
       return;
@@ -314,13 +310,12 @@ export class GameScene extends Phaser.Scene {
     // Loop through all the matches and remove the associated tiles
     for (var i = 0; i < matches.length; i++) {
       var tempArr = matches[i];
-      if (tempArr.length == 3)
-      {
+      if (tempArr.length == 3) {
         for (var j = 0; j < tempArr.length; j++) {
           let tile = tempArr[j];
           //Find where this tile lives in the theoretical grid
           let tilePos = this.getTilePos(this.tileGrid!, tile);
-  
+
           // Remove the tile from the theoretical grid
           if (tilePos.x !== -1 && tilePos.y !== -1) {
             tile.destroy();
@@ -328,8 +323,7 @@ export class GameScene extends Phaser.Scene {
           }
         }
       }
-      else if (tempArr.length == 4)
-      {
+      else if (tempArr.length == 4) {
         console.log('special tile 4');
         let idx = tempArr.indexOf(this.firstSelectedTile!);
         if (idx == -1) idx = tempArr.indexOf(this.secondSelectedTile!);
@@ -359,12 +353,11 @@ export class GameScene extends Phaser.Scene {
             tile.destroy();
             this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
           });
-          
+
         }
         this.tileGrid![tilePos.y][tilePos.x] = specialTile;
       }
-      else if (tempArr.length >= 5)
-      {
+      else if (tempArr.length >= 5) {
         console.log('special tile 5');
         let specialTile = new TileSpecial({
           scene: this,
@@ -391,24 +384,23 @@ export class GameScene extends Phaser.Scene {
             tile.destroy();
             this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
           });
-          
+
         }
         this.tileGrid![tilePos.y][tilePos.x] = specialTile;
       }
     }
-    if(this.tweenManager.allTweens.length == 0)
-    {
+    if (this.tweenManager.allTweens.length == 0) {
       this.resetTile();
       return;
     }
     this.tweenManager.startAllTweens();
-      this.events.once('tweensComplete', () => {
-          this.resetTile();
-      });
+    this.events.once('tweensComplete', () => {
+      this.resetTile();
+    });
   }
 
-  
-  private getTilePos(tileGrid: Tile[][], tile: Tile): { x: number; y: number} {
+
+  private getTilePos(tileGrid: Tile[][], tile: Tile): { x: number; y: number } {
     let pos = { x: -1, y: -1 };
 
     //Find the position of a specific tile in the grid
@@ -498,10 +490,9 @@ export class GameScene extends Phaser.Scene {
             }
           }
       }
-      if (groups.length > 0) 
-        {
-          matches.push(groups);
-        }
+      if (groups.length > 0) {
+        matches.push(groups);
+      }
     }
 
     return matches;
