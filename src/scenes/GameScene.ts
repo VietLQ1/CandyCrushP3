@@ -212,17 +212,6 @@ export class GameScene extends Phaser.Scene {
     if (matches.length > 0) {
       //Remove the tiles
       this.removeTileGroup(matches);
-      // Move the tiles currently on the board into their new positions
-      // this.time.delayedCall(300, () => {
-      //   this.resetTile();
-      //   this.fillTile();
-      //   this.tileUp();
-      // });
-      //Fill the board with new tiles wherever there is an empty spot
-      // this.time.delayedCall(800, () => {
-      //   this.checkMatches();
-      // });
-      // this.checkMatches();
     } else {
       // No match so just swap the tiles back to their original position and reset
       this.swapTiles();
