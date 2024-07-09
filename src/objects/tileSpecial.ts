@@ -1,5 +1,5 @@
 import { ImageConstructor } from "../interfaces/image.interface";
-import { Tile } from "./tile";
+import { Tile } from "./Tile";
 
 export class TileSpecial extends Tile {
     public special: string;

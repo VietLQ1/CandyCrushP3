@@ -23,5 +23,6 @@ export let CONST = {
     'cirno',
     'remilia',
     'sakuya',
+    'hongmeiling',
   ]
 };

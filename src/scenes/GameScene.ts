@@ -1,6 +1,6 @@
 import { CONST } from '../const/const';
-import { Tile } from '../objects/tile';
-import { TileSpecial } from '../objects/tileSpecial';
+import { Tile } from '../objects/Tile';
+import { TileSpecial } from '../objects/TileSpecial';
 
 export class GameScene extends Phaser.Scene {
   // Variables
