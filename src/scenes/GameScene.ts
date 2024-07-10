@@ -1,6 +1,7 @@
 import { CONST } from '../const/const';
 import { Tile } from '../objects/Tile';
 import { TileSpecial } from '../objects/TileSpecial';
+import { TileGridManager } from '../utils/TileGridManger';
 import { TweenSyncManager } from '../utils/TweenSyncManager';
 
 enum GameState {IDLING, SWAPPING, REMOVING, FILLING, RESETING}
@@ -13,6 +14,7 @@ export class GameScene extends Phaser.Scene {
   // Grid with tiles
   private tileGrid: Tile[][] | undefined;
   private tweenManager: TweenSyncManager;
+  private TileGridManager: TileGridManager;
 
   // Selected Tiles
   private firstSelectedTile: Tile | undefined;
@@ -55,6 +57,7 @@ export class GameScene extends Phaser.Scene {
         this.tileGrid[y][x] = this.addTile(x, y);
       }
     }
+    this.TileGridManager = new TileGridManager(this, this.tileGrid);
     // console.log(this.tweens.getTweens()[0].paused);
     this.tweenManager.startAllTweens();
     // console.log(this.tweens.getTweens()[0].paused);
@@ -557,12 +560,15 @@ export class GameScene extends Phaser.Scene {
       for ( let l = 0; l < tempArr.length; l++)
       {
         let tile = tempArr[l];
-        for (let j = i + 1; j < matches.length; j++) {
+        for (let j = 0; j < matches.length; j++) {
+          if (i == j) continue;
           let tempArr1 = matches[j];
           if (tempArr1.indexOf(tile) != -1) {
             tempArr1.splice(tempArr1.indexOf(tile), 1);
             mergedGroups = tempArr.concat(tempArr1);
             matches.splice(j, 1);
+            let idx = mergedGroups.indexOf(tile);
+            [mergedGroups[idx], mergedGroups[2]] = [mergedGroups[2], mergedGroups[idx]];
             j--;
           }
         }
@@ -643,6 +649,78 @@ export class GameScene extends Phaser.Scene {
             }
           }
         }
+        if (x > 2) {
+          if (tileGrid[y][x] && tileGrid[y][x - 2] && tileGrid[y][x - 3]) {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y][x - 2].texture.key &&
+              tileGrid[y][x - 2].texture.key === tileGrid[y][x - 3].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x - 1]]);
+              return moves;
+            }
+          }
+        }
+        if (x < tempArray.length - 1 && (y < tileGrid.length - 2 || y > 1)) {
+          if (tileGrid[y][x] && y < tileGrid.length - 2 && tileGrid[y + 1][x + 1] && tileGrid[y + 2][x + 1]) {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y + 1][x + 1].texture.key &&
+              tileGrid[y + 1][x + 1].texture.key === tileGrid[y + 2][x + 1].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x + 1]]);
+              return moves;
+            }
+          }
+          if (tileGrid[y][x] && y > 1 && tileGrid[y - 1][x + 1] && tileGrid[y - 2][x + 1]) {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y - 1][x + 1].texture.key &&
+              tileGrid[y - 1][x + 1].texture.key === tileGrid[y - 2][x + 1].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x + 1]]);
+              return moves;
+            }
+          }
+          if (tileGrid[y][x] && y > 0 && y < tileGrid.length - 1 && tileGrid[y - 1][x + 1] && tileGrid[y + 1][x + 1])
+          {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y - 1][x + 1].texture.key &&
+              tileGrid[y - 1][x + 1].texture.key === tileGrid[y + 1][x + 1].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x + 1]]);
+              return moves;
+            }
+          }
+        }
+        if (x > 1 && (y < tileGrid.length - 2 || y > 1))
+        {
+          if (tileGrid[y][x] && y < tileGrid.length - 2 && tileGrid[y + 1][x - 1] && tileGrid[y + 2][x - 1]) {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y + 1][x - 1].texture.key &&
+              tileGrid[y + 1][x - 1].texture.key === tileGrid[y + 2][x - 1].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x - 1]]);
+              return moves;
+            }
+          }
+          if (tileGrid[y][x] && y > 1 && tileGrid[y - 1][x - 1] && tileGrid[y - 2][x - 1]) {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y - 1][x - 1].texture.key &&
+              tileGrid[y - 1][x - 1].texture.key === tileGrid[y - 2][x - 1].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x - 1]]);
+              return moves;
+            }
+          }
+          if (tileGrid[y][x] && y > 0 && y < tileGrid.length - 1 && tileGrid[y - 1][x - 1] && tileGrid[y + 1][x - 1])
+          {
+            if (
+              tileGrid[y][x].texture.key === tileGrid[y - 1][x - 1].texture.key &&
+              tileGrid[y - 1][x - 1].texture.key === tileGrid[y + 1][x - 1].texture.key
+            ) {
+              moves.push([tileGrid[y][x], tileGrid[y][x - 1]]);
+              return moves;
+            }
+          }
+        }
       }
     }
 
@@ -650,7 +728,7 @@ export class GameScene extends Phaser.Scene {
     for (let j = 0; j < tileGrid.length; j++) {
       var tempArr = tileGrid[j];
       for (let i = 0; i < tempArr.length; i++) {
-        if (i < tempArr.length - 3)
+        if (i < tempArr.length - 3){
           if (tileGrid[i][j] && tileGrid[i + 2][j] && tileGrid[i + 3][j]) {
             if (
               tileGrid[i][j].texture.key === tileGrid[i + 2][j].texture.key &&
@@ -660,6 +738,80 @@ export class GameScene extends Phaser.Scene {
               return moves;
             }
           }
+        }
+        if (i > 2)
+        {
+          if (tileGrid[i][j] && tileGrid[i - 2][j] && tileGrid[i - 3][j]) {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i - 2][j].texture.key &&
+              tileGrid[i - 2][j].texture.key === tileGrid[i - 3][j].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i - 1][j]]);
+              return moves;
+            }
+          }
+        }
+        if (i < tempArr.length - 1 && (j < tileGrid.length - 2 || j > 1)) {
+          if (tileGrid[i][j] && j < tileGrid.length - 2 && tileGrid[i + 1][j + 1] && tileGrid[i + 1][j + 2]) {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i + 1][j + 1].texture.key &&
+              tileGrid[i + 1][j + 1].texture.key === tileGrid[i + 1][j + 2].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i + 1][j]]);
+              return moves;
+            }
+          }
+          if (tileGrid[i][j] && j > 1 && tileGrid[i + 1][j - 1] && tileGrid[i + 1][j - 2]) {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i + 1][j - 1].texture.key &&
+              tileGrid[i + 1][j - 1].texture.key === tileGrid[i + 1][j - 2].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i + 1][j]]);
+              return moves;
+            }
+          }
+          if (tileGrid[i][j] && j > 0 && j < tileGrid.length - 1 && tileGrid[i + 1][j - 1] && tileGrid[i + 1][j + 1])
+          {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i + 1][j - 1].texture.key &&
+              tileGrid[i + 1][j - 1].texture.key === tileGrid[i + 1][j + 1].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i + 1][j]]);
+              return moves;
+            }
+          }
+        }
+        if (i > 1 && (j < tileGrid.length - 2 || j > 1))
+        {
+          if (tileGrid[i][j] && j < tileGrid.length - 2 && tileGrid[i - 1][j + 1] && tileGrid[i - 1][j + 2]) {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i - 1][j + 1].texture.key &&
+              tileGrid[i - 1][j + 1].texture.key === tileGrid[i - 1][j + 2].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i - 1][j]]);
+              return moves;
+            }
+          }
+          if (tileGrid[i][j] && j > 1 && tileGrid[i - 1][j - 1] && tileGrid[i - 1][j - 2]) {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i - 1][j - 1].texture.key &&
+              tileGrid[i - 1][j - 1].texture.key === tileGrid[i - 1][j - 2].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i - 1][j]]);
+              return moves;
+            }
+          }
+          if (tileGrid[i][j] && j > 0 && j < tileGrid.length - 1 && tileGrid[i - 1][j - 1] && tileGrid[i - 1][j + 1])
+          {
+            if (
+              tileGrid[i][j].texture.key === tileGrid[i - 1][j - 1].texture.key &&
+              tileGrid[i - 1][j - 1].texture.key === tileGrid[i - 1][j + 1].texture.key
+            ) {
+              moves.push([tileGrid[i][j], tileGrid[i - 1][j]]);
+              return moves;
+            }
+          }
+        }
       }
     }
     return moves;
@@ -668,8 +820,9 @@ export class GameScene extends Phaser.Scene {
   public update(time: number, delta: number): void {
     if (this.gameState == GameState.IDLING && time - this.lastInputTime > 5000) {
       this.lastInputTime = this.time.now;
-      console.log('player idle');
+      // console.log('player idle');
       let moves = this.getHint(this.tileGrid!);
+      console.log('idle' + moves.length);
       if (moves.length > 0) {
         this.add.particles(
           moves[0][0].x + 32,
@@ -682,7 +835,7 @@ export class GameScene extends Phaser.Scene {
             angle: { min: -100, max: -80 },
             quantity: 5,
             lifespan: 500,
-            duration: 100
+            duration: 300
           }
         );
         this.add.particles(
@@ -696,9 +849,13 @@ export class GameScene extends Phaser.Scene {
             angle: { min: -100, max: -80 },
             quantity: 5,
             lifespan: 500,
-            duration: 100
+            duration: 300
           }
         );
+      }
+      else
+      {
+        console.log('no moves');
       }
     }
   }
