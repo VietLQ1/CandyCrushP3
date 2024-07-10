@@ -19,7 +19,7 @@ export let CONST = {
     //'starcookie1',
     //'starcookie2'
     'reimu',
-    // 'marisa',
+    'marisa',
     // 'cirno',
     // 'remilia',
     // 'sakuya',

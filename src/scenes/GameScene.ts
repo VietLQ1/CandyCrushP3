@@ -1,10 +1,12 @@
+import { GameObjects } from 'phaser';
 import { CONST } from '../const/const';
 import { Tile } from '../objects/Tile';
 import { TileSpecial } from '../objects/TileSpecial';
 import { TileGridManager } from '../utils/TileGridManger';
 import { TweenSyncManager } from '../utils/TweenSyncManager';
+import { Collision } from 'matter';
 
-enum GameState {IDLING, SWAPPING, REMOVING, FILLING, RESETING}
+enum GameState { IDLING, SWAPPING, REMOVING, FILLING, RESETING }
 export class GameScene extends Phaser.Scene {
   // Variables
   private canMove: boolean;
@@ -229,14 +231,13 @@ export class GameScene extends Phaser.Scene {
       //Remove the tiles
       this.gameState = GameState.REMOVING;
       this.removeTileGroup(matches);
-    } 
+    }
     else {
       // No match so just swap the tiles back to their original position and reset
       this.swapTiles();
       this.tileUp();
       this.time.delayedCall(500, () => {
-        if (matches.length == 0 && this.tweenManager.allTweens.length == 0)
-        {
+        if (matches.length == 0 && this.tweenManager.allTweens.length == 0) {
           this.gameState = GameState.IDLING;
           this.lastInputTime = this.time.now;
         }
@@ -391,8 +392,7 @@ export class GameScene extends Phaser.Scene {
             repeat: 0,
             yoyo: false
           }).on('complete', () => {
-            if (this.tileGrid![tilePos1.y][tilePos1.x])
-            {
+            if (this.tileGrid![tilePos1.y][tilePos1.x]) {
               tile.destroy();
               this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
             }
@@ -405,7 +405,7 @@ export class GameScene extends Phaser.Scene {
         console.log('special tile 5');
         let idx = tempArr.indexOf(this.firstSelectedTile!);
         if (idx == -1) idx = tempArr.indexOf(this.secondSelectedTile!);
-        if (idx == -1) idx = 2;
+        if (idx == -1) idx = 0;
         let specialTile = new TileSpecial({
           scene: this,
           x: tempArr[idx].x,
@@ -436,8 +436,7 @@ export class GameScene extends Phaser.Scene {
             repeat: 0,
             yoyo: false
           }).on('complete', () => {
-            if (this.tileGrid![tilePos1.y][tilePos1.x])
-            {
+            if (this.tileGrid![tilePos1.y][tilePos1.x]) {
               tile.destroy();
               this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
             }
@@ -478,116 +477,138 @@ export class GameScene extends Phaser.Scene {
   private getMatches(tileGrid: Tile[][]): Tile[][] {
     let matches: Tile[][] = [];
     let groups: Tile[] = [];
+    let dim: number[] = [];
     // Check for horizontal matches
     for (let y = 0; y < tileGrid.length; y++) {
-      let tempArray = tileGrid[y];
-      groups = [];
-      for (let x = 0; x < tempArray.length; x++) {
-        if (x < tempArray.length - 2) {
-          if (tileGrid[y][x] && tileGrid[y][x + 1] && tileGrid[y][x + 2]) {
-            if (
-              tileGrid[y][x].texture.key === tileGrid[y][x + 1].texture.key &&
-              tileGrid[y][x + 1].texture.key === tileGrid[y][x + 2].texture.key
-            ) {
-              if (groups.length > 0) {
-                if (groups.indexOf(tileGrid[y][x]) == -1) {
-                  matches.push(groups);
-                  groups = [];
+      for (let x = 0; x < tileGrid[y].length; x++) {
+        let tile = tileGrid[y][x];
+        let cols: Tile[] = [];
+        let rows: Tile[] = [];
+        if (groups.indexOf(tile) == -1) {
+          let Tgrouped = false;
+          matches.forEach(match => {
+            if (match.indexOf(tile) !== -1) {
+              groups = match;
+              Tgrouped = true;
+            }
+          });
+          // console.log(y , x);
+          if (!Tgrouped)
+          {
+            groups.push(tile);
+          }
+          else if (dim[matches.indexOf(groups)] == 2)
+          {
+            groups = [];
+            continue;
+          }
+          for (let i = x + 1; i < tileGrid[y].length; i++) {
+            if (tileGrid[y][x].texture.key === tileGrid[y][i].texture.key) {
+              let grouped = false;
+              matches.forEach(match => {
+                if (match.indexOf(tileGrid[y][i]) !== -1) {
+                  grouped = true;
                 }
+              });
+              if (grouped) break;
+              cols.push(tileGrid[y][i]);
+              if (Tgrouped)
+              {
+                dim[matches.indexOf(groups)] = 2;
+                // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
+                
               }
-
-              if (groups.indexOf(tileGrid[y][x]) == -1) {
-                groups.push(tileGrid[y][x]);
+            }
+            else {
+              break;
+            }
+          }
+          for (let i = x - 1; i >= 0; i--) {
+            if (tileGrid[y][x].texture.key === tileGrid[y][i].texture.key) {
+              let grouped = false;
+              matches.forEach(match => {
+                if (match.indexOf(tileGrid[y][i]) !== -1) {
+                  grouped = true;
+                }
+              });
+              if (grouped) break;
+              cols.push(tileGrid[y][i]);
+              if (Tgrouped)
+              {
+                dim[matches.indexOf(groups)] = 2;
+                // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
               }
-
-              if (groups.indexOf(tileGrid[y][x + 1]) == -1) {
-                groups.push(tileGrid[y][x + 1]);
+            }
+            else {
+              break;
+            }
+          }
+          for (let j = y + 1; j < tileGrid.length; j++) {
+            if (tileGrid[y][x].texture.key === tileGrid[j][x].texture.key) {
+              let grouped = false;
+              matches.forEach(match => {
+                if (match.indexOf(tileGrid[j][x]) !== -1) {
+                  grouped = true;
+                }
+              });
+              if (grouped) break;
+              rows.push(tileGrid[j][x]);
+              if (Tgrouped)
+              {
+                dim[matches.indexOf(groups)] = 2;
+                // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
               }
-
-              if (groups.indexOf(tileGrid[y][x + 2]) == -1) {
-                groups.push(tileGrid[y][x + 2]);
+            }
+            else {
+              break;
+            }
+          }
+          for (let j = y - 1; j >= 0; j--) {
+            if (tileGrid[y][x].texture.key === tileGrid[j][x].texture.key) {
+              let grouped = false;
+              matches.forEach(match => {
+                if (match.indexOf(tileGrid[j][x]) !== -1) {
+                  grouped = true;
+                }
+              });
+              if (grouped) break;
+              rows.push(tileGrid[j][x]);
+              if (Tgrouped)
+              {
+                dim[matches.indexOf(groups)] = 2;
+                // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
               }
+            }
+            else {
+              break;
             }
           }
         }
-      }
-
-      if (groups.length > 0) {
-        matches.push(groups);
-      }
-    }
-
-    //Check for vertical matches
-    for (let j = 0; j < tileGrid.length; j++) {
-      var tempArr = tileGrid[j];
-      groups = [];
-      for (let i = 0; i < tempArr.length; i++) {
-        if (i < tempArr.length - 2)
-          if (tileGrid[i][j] && tileGrid[i + 1][j] && tileGrid[i + 2][j]) {
-            if (
-              tileGrid[i][j].texture.key === tileGrid[i + 1][j].texture.key &&
-              tileGrid[i + 1][j].texture.key === tileGrid[i + 2][j].texture.key
-            ) {
-              if (groups.length > 0) {
-                if (groups.indexOf(tileGrid[i][j]) == -1) {
-                  matches.push(groups);
-                  groups = [];
-                }
-              }
-
-              if (groups.indexOf(tileGrid[i][j]) == -1) {
-                groups.push(tileGrid[i][j]);
-              }
-              if (groups.indexOf(tileGrid[i + 1][j]) == -1) {
-                groups.push(tileGrid[i + 1][j]);
-              }
-              if (groups.indexOf(tileGrid[i + 2][j]) == -1) {
-                groups.push(tileGrid[i + 2][j]);
-              }
-            }
+        if (matches.indexOf(groups) == -1 && (cols.length >= 2 || rows.length >= 2)) {
+          if (rows.length >= 2) groups = groups.concat(rows);
+          if (cols.length >= 2) groups = groups.concat(cols);
+          matches.push(groups);
+          if (cols.length >= 2 && rows.length >= 2)
+          {
+            dim.push(2);
           }
-      }
-      if (groups.length > 0) {
-        matches.push(groups);
-      }
-    }
-    // Merge groups that have the same tile in matches
-    let mergedMatches: Tile[][] = [];
-    let mergedGroups: Tile[] = [];
-
-    for (let i = 0; i < matches.length; i++) {
-      let tempArr = matches[i];
-      for ( let l = 0; l < tempArr.length; l++)
-      {
-        let tile = tempArr[l];
-        for (let j = 0; j < matches.length; j++) {
-          if (i == j) continue;
-          let tempArr1 = matches[j];
-          if (tempArr1.indexOf(tile) != -1) {
-            tempArr1.splice(tempArr1.indexOf(tile), 1);
-            mergedGroups = tempArr.concat(tempArr1);
-            matches.splice(j, 1);
-            let idx = mergedGroups.indexOf(tile);
-            [mergedGroups[idx], mergedGroups[2]] = [mergedGroups[2], mergedGroups[idx]];
-            j--;
+          else
+          {
+            dim.push(1);
           }
         }
-      }
-      if (mergedGroups.length > 0) {
-        mergedMatches.push(mergedGroups);
-        mergedGroups = [];
-      }
-      else {
-        mergedMatches.push(tempArr);
+        else {
+          if (cols.length >= 2 || rows.length >= 2) {
+            //[matches[matches.indexOf(groups)][0], matches[matches.indexOf(groups)][matches[matches.indexOf(groups)].indexOf(tile)]] = [matches[matches.indexOf(groups)][matches[matches.indexOf(groups)].indexOf(tile)], matches[matches.indexOf(groups)][0]];
+            if (rows.length >= 2) matches[matches.indexOf(groups)] = matches[matches.indexOf(groups)].concat(rows);
+            if (cols.length >= 2) matches[matches.indexOf(groups)] = matches[matches.indexOf(groups)].concat(cols);
+          }
+        }
+        groups = [];
       }
     }
 
-    if (mergedGroups.length > 0) {
-      mergedMatches.push(mergedGroups);
-    }
-
-    return mergedMatches;
-    // return matches;
+    return matches;
   }
   private specialTileHandler(tile: TileSpecial, matches: Tile[][]): void {
     let tilePos = this.getTilePos(this.tileGrid!, tile);
@@ -596,7 +617,15 @@ export class GameScene extends Phaser.Scene {
       for (let x = 0; x < this.tileGrid![tilePos.y].length; x++) {
         let tile1 = this.tileGrid![tilePos.y][x];
         if (tile1 && tile1 !== tile) {
-          matches.push([tile1]);
+          let grouped = false;
+          matches.forEach(match => {
+            if (match.indexOf(tile1) !== -1) {
+              grouped = true;
+            }
+          });
+          if (!grouped) {
+            matches.push([tile1]);
+          }
         }
       }
     }
@@ -604,18 +633,33 @@ export class GameScene extends Phaser.Scene {
       for (let y = 0; y < this.tileGrid!.length; y++) {
         let tile1 = this.tileGrid![y][tilePos.x];
         if (tile1 && tile1 !== tile) {
-          matches.push([tile1]);
+          let grouped = false;
+          matches.forEach(match => {
+            if (match.indexOf(tile1) !== -1) {
+              grouped = true;
+            }
+          });
+          if (!grouped) {
+            matches.push([tile1]);
+          }
         }
       }
     }
-    else if (tile.special == '3x3')
-    {
+    else if (tile.special == '3x3') {
       for (let y = tilePos.y - 1; y <= tilePos.y + 1; y++) {
         for (let x = tilePos.x - 1; x <= tilePos.x + 1; x++) {
           if (y >= 0 && y < this.tileGrid!.length && x >= 0 && x < this.tileGrid![y].length) {
             let tile1 = this.tileGrid![y][x];
             if (tile1 && tile1 !== tile) {
-              matches.push([tile1]);
+              let grouped = false;
+              matches.forEach(match => {
+                if (match.indexOf(tile1) !== -1) {
+                  grouped = true;
+                }
+              });
+              if (!grouped) {
+                matches.push([tile1]);
+              }
             }
           }
         }
@@ -626,14 +670,21 @@ export class GameScene extends Phaser.Scene {
         for (let x = 0; x < this.tileGrid![y].length; x++) {
           let tile1 = this.tileGrid![y][x];
           if (tile1 && tile1 !== tile) {
-            matches.push([tile1]);
+            let grouped = false;
+            matches.forEach(match => {
+              if (match.indexOf(tile1) !== -1) {
+                grouped = true;
+              }
+            });
+            if (!grouped) {
+              matches.push([tile1]);
+            }
           }
         }
       }
     }
   }
-  private getHint(tileGrid: Tile[][]): Tile[][]
-  {
+  private getHint(tileGrid: Tile[][]): Tile[][] {
     let moves: Tile[][] = [];
     for (let y = 0; y < tileGrid.length; y++) {
       let tempArray = tileGrid[y];
@@ -679,8 +730,7 @@ export class GameScene extends Phaser.Scene {
               return moves;
             }
           }
-          if (tileGrid[y][x] && y > 0 && y < tileGrid.length - 1 && tileGrid[y - 1][x + 1] && tileGrid[y + 1][x + 1])
-          {
+          if (tileGrid[y][x] && y > 0 && y < tileGrid.length - 1 && tileGrid[y - 1][x + 1] && tileGrid[y + 1][x + 1]) {
             if (
               tileGrid[y][x].texture.key === tileGrid[y - 1][x + 1].texture.key &&
               tileGrid[y - 1][x + 1].texture.key === tileGrid[y + 1][x + 1].texture.key
@@ -690,8 +740,7 @@ export class GameScene extends Phaser.Scene {
             }
           }
         }
-        if (x > 1 && (y < tileGrid.length - 2 || y > 1))
-        {
+        if (x > 1 && (y < tileGrid.length - 2 || y > 1)) {
           if (tileGrid[y][x] && y < tileGrid.length - 2 && tileGrid[y + 1][x - 1] && tileGrid[y + 2][x - 1]) {
             if (
               tileGrid[y][x].texture.key === tileGrid[y + 1][x - 1].texture.key &&
@@ -710,8 +759,7 @@ export class GameScene extends Phaser.Scene {
               return moves;
             }
           }
-          if (tileGrid[y][x] && y > 0 && y < tileGrid.length - 1 && tileGrid[y - 1][x - 1] && tileGrid[y + 1][x - 1])
-          {
+          if (tileGrid[y][x] && y > 0 && y < tileGrid.length - 1 && tileGrid[y - 1][x - 1] && tileGrid[y + 1][x - 1]) {
             if (
               tileGrid[y][x].texture.key === tileGrid[y - 1][x - 1].texture.key &&
               tileGrid[y - 1][x - 1].texture.key === tileGrid[y + 1][x - 1].texture.key
@@ -728,7 +776,7 @@ export class GameScene extends Phaser.Scene {
     for (let j = 0; j < tileGrid.length; j++) {
       var tempArr = tileGrid[j];
       for (let i = 0; i < tempArr.length; i++) {
-        if (i < tempArr.length - 3){
+        if (i < tempArr.length - 3) {
           if (tileGrid[i][j] && tileGrid[i + 2][j] && tileGrid[i + 3][j]) {
             if (
               tileGrid[i][j].texture.key === tileGrid[i + 2][j].texture.key &&
@@ -739,8 +787,7 @@ export class GameScene extends Phaser.Scene {
             }
           }
         }
-        if (i > 2)
-        {
+        if (i > 2) {
           if (tileGrid[i][j] && tileGrid[i - 2][j] && tileGrid[i - 3][j]) {
             if (
               tileGrid[i][j].texture.key === tileGrid[i - 2][j].texture.key &&
@@ -770,8 +817,7 @@ export class GameScene extends Phaser.Scene {
               return moves;
             }
           }
-          if (tileGrid[i][j] && j > 0 && j < tileGrid.length - 1 && tileGrid[i + 1][j - 1] && tileGrid[i + 1][j + 1])
-          {
+          if (tileGrid[i][j] && j > 0 && j < tileGrid.length - 1 && tileGrid[i + 1][j - 1] && tileGrid[i + 1][j + 1]) {
             if (
               tileGrid[i][j].texture.key === tileGrid[i + 1][j - 1].texture.key &&
               tileGrid[i + 1][j - 1].texture.key === tileGrid[i + 1][j + 1].texture.key
@@ -781,8 +827,7 @@ export class GameScene extends Phaser.Scene {
             }
           }
         }
-        if (i > 1 && (j < tileGrid.length - 2 || j > 1))
-        {
+        if (i > 1 && (j < tileGrid.length - 2 || j > 1)) {
           if (tileGrid[i][j] && j < tileGrid.length - 2 && tileGrid[i - 1][j + 1] && tileGrid[i - 1][j + 2]) {
             if (
               tileGrid[i][j].texture.key === tileGrid[i - 1][j + 1].texture.key &&
@@ -801,8 +846,7 @@ export class GameScene extends Phaser.Scene {
               return moves;
             }
           }
-          if (tileGrid[i][j] && j > 0 && j < tileGrid.length - 1 && tileGrid[i - 1][j - 1] && tileGrid[i - 1][j + 1])
-          {
+          if (tileGrid[i][j] && j > 0 && j < tileGrid.length - 1 && tileGrid[i - 1][j - 1] && tileGrid[i - 1][j + 1]) {
             if (
               tileGrid[i][j].texture.key === tileGrid[i - 1][j - 1].texture.key &&
               tileGrid[i - 1][j - 1].texture.key === tileGrid[i - 1][j + 1].texture.key
@@ -818,6 +862,7 @@ export class GameScene extends Phaser.Scene {
 
   }
   public update(time: number, delta: number): void {
+    // this.tileGrid![0][1].setAlpha(0.5);
     if (this.gameState == GameState.IDLING && time - this.lastInputTime > 5000) {
       this.lastInputTime = this.time.now;
       // console.log('player idle');
@@ -853,8 +898,7 @@ export class GameScene extends Phaser.Scene {
           }
         );
       }
-      else
-      {
+      else {
         console.log('no moves');
       }
     }
