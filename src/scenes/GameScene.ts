@@ -62,7 +62,7 @@ export class GameScene extends Phaser.Scene {
 
     // Check if matches on the start
     this.events.once('tweensComplete', () => {
-      console.log(this.tweenManager.allTweens.length);
+      // console.log(this.tweenManager.allTweens.length);
       this.canMove = true;
       this.checkMatches();
     });
@@ -189,7 +189,9 @@ export class GameScene extends Phaser.Scene {
       });
       this.tweenManager.startAllTweens();
       this.events.once('tweensComplete', () => {
+        this.time.delayedCall(200, () => {
         this.checkMatches();
+        });
       });
 
       this.firstSelectedTile =
@@ -212,16 +214,19 @@ export class GameScene extends Phaser.Scene {
     if (matches.length > 0) {
       //Remove the tiles
       this.removeTileGroup(matches);
-    } else {
+    } 
+    else {
       // No match so just swap the tiles back to their original position and reset
       this.swapTiles();
       this.tileUp();
-      this.canMove = true;
+      this.time.delayedCall(500, () => {
+        this.canMove = true;
+      });
     }
   }
 
   private resetTile(): void {
-    console.log('reset tile');
+    // console.log('reset tile');
     // Loop through each column starting from the left
     for (let y = this.tileGrid!.length - 1; y > 0; y--) {
       // Loop through each tile in column from bottom to top
@@ -256,14 +261,14 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     this.tweenManager.startAllTweens();
-    console.log(this.tweenManager.allTweens.length)
+    // console.log(this.tweenManager.allTweens.length)
     this.events.once('tweensComplete', () => {
       this.fillTile();
     });
   }
 
   private fillTile(): void {
-    console.log('fill tile');
+    // console.log('fill tile');
     //Check for blank spaces in the grid and add new tiles at that position
     for (var y = 0; y < this.tileGrid!.length; y++) {
       for (var x = 0; x < this.tileGrid![y].length; x++) {
@@ -278,13 +283,17 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.tweenManager.allTweens.length == 0) {
       this.tileUp();
-      this.checkMatches();
+      this.time.delayedCall(500, () => {
+        this.checkMatches();
+      });
       return;
     }
     this.tweenManager.startAllTweens();
     this.events.once('tweensComplete', () => {
       this.tileUp();
-      this.checkMatches();
+      this.time.delayedCall(500, () => {
+        this.checkMatches();
+      });
     });
   }
 
@@ -299,20 +308,44 @@ export class GameScene extends Phaser.Scene {
     // Loop through all the matches and remove the associated tiles
     for (var i = 0; i < matches.length; i++) {
       var tempArr = matches[i];
-      if (tempArr.length == 3) {
+      if (tempArr.length <= 3) {
         for (var j = 0; j < tempArr.length; j++) {
           let tile = tempArr[j];
+          if (tile instanceof TileSpecial) {
+            this.specialTileHandler(tile, matches);
+          }
           //Find where this tile lives in the theoretical grid
           let tilePos = this.getTilePos(this.tileGrid!, tile);
 
           // Remove the tile from the theoretical grid
           if (tilePos.x !== -1 && tilePos.y !== -1) {
+            this.add.particles(
+              tilePos.x * CONST.tileWidth + 32,
+              tilePos.y * CONST.tileHeight + 32,
+              'particle',
+              {
+                blendMode: 'ADD',
+                scale: { start: 0.5, end: 0 },
+                speed: { min: 100, max: 200 },
+                quantity: 5,
+                lifespan: 500,
+                duration: 100
+              }
+            )
             tile.destroy();
             this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
           }
         }
       }
       else if (tempArr.length == 4) {
+        let decider = Phaser.Math.RND.between(0, 1);
+        let type = 'row';
+        if (decider == 0) {
+          type = 'row';
+        }
+        else {
+          type = 'column';
+        }
         console.log('special tile 4');
         let idx = tempArr.indexOf(this.firstSelectedTile!);
         if (idx == -1) idx = tempArr.indexOf(this.secondSelectedTile!);
@@ -323,7 +356,7 @@ export class GameScene extends Phaser.Scene {
           y: tempArr[idx].y,
           texture: tempArr[idx].texture.key,
           frame: 5
-        }, 'row');
+        }, type);
         let tilePos = this.getTilePos(this.tileGrid!, tempArr[idx]);
         this.tileGrid![tilePos.y][tilePos.x].destroy();
         this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
@@ -339,8 +372,11 @@ export class GameScene extends Phaser.Scene {
             repeat: 0,
             yoyo: false
           }).on('complete', () => {
-            tile.destroy();
-            this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+            if (this.tileGrid![tilePos1.y][tilePos1.x])
+            {
+              tile.destroy();
+              this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+            }
           });
 
         }
@@ -348,18 +384,21 @@ export class GameScene extends Phaser.Scene {
       }
       else if (tempArr.length >= 5) {
         console.log('special tile 5');
+        let idx = tempArr.indexOf(this.firstSelectedTile!);
+        if (idx == -1) idx = tempArr.indexOf(this.secondSelectedTile!);
+        if (idx == -1) idx = 2;
         let specialTile = new TileSpecial({
           scene: this,
-          x: tempArr[2].x,
-          y: tempArr[2].y,
-          texture: tempArr[0].texture.key,
+          x: tempArr[idx].x,
+          y: tempArr[idx].y,
+          texture: tempArr[idx].texture.key,
           frame: 5
         }, '3x3');
-        let tilePos = this.getTilePos(this.tileGrid!, tempArr[2]);
+        let tilePos = this.getTilePos(this.tileGrid!, tempArr[idx]);
         this.tileGrid![tilePos.y][tilePos.x].destroy();
         this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
         for (var j = 0; j < tempArr.length; j++) {
-          if (j == 2) continue;
+          if (j == idx) continue;
           let tilePos1 = this.getTilePos(this.tileGrid!, tempArr[j]);
           let tile = tempArr[j];
           this.tweenManager.createTween({
@@ -370,8 +409,11 @@ export class GameScene extends Phaser.Scene {
             repeat: 0,
             yoyo: false
           }).on('complete', () => {
-            tile.destroy();
-            this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+            if (this.tileGrid![tilePos1.y][tilePos1.x])
+            {
+              tile.destroy();
+              this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+            }
           });
 
         }
@@ -379,12 +421,15 @@ export class GameScene extends Phaser.Scene {
       }
     }
     if (this.tweenManager.allTweens.length == 0) {
-      this.resetTile();
-      return;
+      this.time.delayedCall(500, () => {
+        this.resetTile();
+      });
     }
     this.tweenManager.startAllTweens();
     this.events.once('tweensComplete', () => {
-      this.resetTile();
+      this.time.delayedCall(500, () => {
+        this.resetTile();
+      });
     });
   }
 
@@ -483,7 +528,71 @@ export class GameScene extends Phaser.Scene {
         matches.push(groups);
       }
     }
+    // Merge groups that have the same tile in matches
+    let mergedMatches: Tile[][] = [];
+    let mergedGroups: Tile[] = [];
 
-    return matches;
+    for (let i = 0; i < matches.length; i++) {
+      let tempArr = matches[i];
+      for ( let l = 0; l < tempArr.length; l++)
+      {
+        let tile = tempArr[l];
+        for (let j = i + 1; j < matches.length; j++) {
+          let tempArr1 = matches[j];
+          if (tempArr1.indexOf(tile) != -1) {
+            tempArr1.splice(tempArr1.indexOf(tile), 1);
+            mergedGroups = tempArr.concat(tempArr1);
+            matches.splice(j, 1);
+            j--;
+          }
+        }
+      }
+      if (mergedGroups.length > 0) {
+        mergedMatches.push(mergedGroups);
+        mergedGroups = [];
+      }
+      else {
+        mergedMatches.push(tempArr);
+      }
+    }
+
+    if (mergedGroups.length > 0) {
+      mergedMatches.push(mergedGroups);
+    }
+
+    return mergedMatches;
+    // return matches;
+  }
+  private specialTileHandler(tile: TileSpecial, matches: Tile[][]): void {
+    let tilePos = this.getTilePos(this.tileGrid!, tile);
+    if (tile.special == 'row') {
+      for (let x = 0; x < this.tileGrid![tilePos.y].length; x++) {
+        let tile1 = this.tileGrid![tilePos.y][x];
+        if (tile1 && tile1 !== tile) {
+          matches.push([tile1]);
+        }
+      }
+    }
+    else if (tile.special == 'column') {
+      for (let y = 0; y < this.tileGrid!.length; y++) {
+        let tile1 = this.tileGrid![y][tilePos.x];
+        if (tile1 && tile1 !== tile) {
+          matches.push([tile1]);
+        }
+      }
+    }
+    else if (tile.special == '3x3')
+    {
+      for (let y = tilePos.y - 1; y <= tilePos.y + 1; y++) {
+        for (let x = tilePos.x - 1; x <= tilePos.x + 1; x++) {
+          if (y >= 0 && y < this.tileGrid!.length && x >= 0 && x < this.tileGrid![y].length) {
+            let tile1 = this.tileGrid![y][x];
+            if (tile1 && tile1 !== tile) {
+              matches.push([tile1]);
+            }
+          }
+        }
+      }
+    }
   }
 }

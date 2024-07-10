@@ -22,5 +22,6 @@ export class Tile extends Phaser.GameObjects.Sprite {
     //this.setDisplayOrigin(32, 32);
     this.play('idle');
     this.scene.add.existing(this);
+    // this.init();
   }
 }
