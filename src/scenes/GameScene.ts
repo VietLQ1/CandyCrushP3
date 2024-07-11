@@ -336,19 +336,6 @@ export class GameScene extends Phaser.Scene {
 
           // Remove the tile from the theoretical grid
           if (tilePos.x !== -1 && tilePos.y !== -1) {
-            // this.add.particles(
-            //   tilePos.x * CONST.tileWidth + 32,
-            //   tilePos.y * CONST.tileHeight + 32,
-            //   'particle',
-            //   {
-            //     blendMode: 'ADD',
-            //     scale: { start: 0.5, end: 0 },
-            //     speed: { min: 100, max: 200 },
-            //     quantity: 5,
-            //     lifespan: 500,
-            //     duration: 100
-            //   }
-            // )
             this.TileAnimationHandler.playTileExplodeParticle(tile);
             tile.destroy();
             this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
@@ -907,7 +894,9 @@ export class GameScene extends Phaser.Scene {
             lifespan: 500,
             duration: 300
           }
-        );
+        ).on('complete', () => {
+          this.TileGridManager.idleTileGrid();
+        });
       }
       else {
         console.log('no moves');

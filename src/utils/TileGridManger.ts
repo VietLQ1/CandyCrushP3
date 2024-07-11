@@ -1,3 +1,4 @@
+import { GameObjects } from "phaser";
 import { Tile } from "../objects/Tile";
 
 export class TileGridManager
@@ -20,7 +21,21 @@ export class TileGridManager
     }
     public idleTileGrid(): void
     {
-
+        for (let i = 0; i < this.tileGrid.length; i++)
+        {
+            for (let j = 0; j < this.tileGrid[i].length; j++)
+            {
+                this.scene.tweens.add({
+                    targets: this.tileGrid[i][j],
+                    scale: 0.75,
+                    ease: 'sine.inout',
+                    duration: 300,
+                    delay: i * 50,
+                    repeat: 0,
+                    yoyo: true,
+                });
+            }
+        }
     }
     public highlightTileGrid(tilePos: {x: number, y: number}): void
     {
