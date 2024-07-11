@@ -78,7 +78,7 @@ export class GameScene extends Phaser.Scene {
       // console.log(this.tweenManager.allTweens.length);
       this.canMove = true;
       this.gameState = GameState.IDLING;
-      console.log('init call');
+      // console.log('init call');
       this.checkMatches();
     });
   }
@@ -210,7 +210,7 @@ export class GameScene extends Phaser.Scene {
       this.events.once('tweensComplete', () => {
         this.time.delayedCall(200, () => {
           this.gameState = GameState.IDLING;
-          console.log('swaptile call')
+          // console.log('swaptile call')
           this.checkMatches();
         });
       });
@@ -230,7 +230,7 @@ export class GameScene extends Phaser.Scene {
     //Call the getMatches function to check for spots where there is
     //a run of three or more tiles in a row
     let matches = this.getMatches(this.tileGrid!);
-    console.log(matches.length);
+    // console.log(matches.length);
     //If there are matches, remove them
     if (matches.length > 0) {
       //Remove the tiles
@@ -308,7 +308,7 @@ export class GameScene extends Phaser.Scene {
     this.events.once('tweensComplete', () => {
       this.tileUp();
       this.time.delayedCall(500, () => {
-        console.log('fill tile call');
+        // console.log('fill tile call');
         this.checkMatches();
       });
     });
@@ -351,7 +351,7 @@ export class GameScene extends Phaser.Scene {
         else {
           type = 'column';
         }
-        console.log('special tile 4');
+        // console.log('special tile 4');
         let idx = tempArr.indexOf(this.firstSelectedTile!);
         if (idx == -1) idx = tempArr.indexOf(this.secondSelectedTile!);
         if (idx == -1) idx = 0;
@@ -365,7 +365,7 @@ export class GameScene extends Phaser.Scene {
         let tilePos = this.getTilePos(this.tileGrid!, tempArr[idx]);
         if (this.tileGrid![tilePos.y][tilePos.x] instanceof TileSpecial) {
           specialTile.special = 'fullboard';
-          console.log('fullboard');
+          // console.log('fullboard');
         }
         this.tileGrid![tilePos.y][tilePos.x].destroy();
         this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
@@ -375,7 +375,7 @@ export class GameScene extends Phaser.Scene {
           let tile = tempArr[j];
           if (tile instanceof TileSpecial) {
             specialTile.special = 'fullboard';
-            console.log('fullboard');
+            // console.log('fullboard');
           }
           this.tweenManager.createTween({
             targets: tile,
@@ -393,9 +393,10 @@ export class GameScene extends Phaser.Scene {
 
         }
         this.tileGrid![tilePos.y][tilePos.x] = specialTile;
+        this.TileAnimationHandler.playSpecialTileParticle(specialTile);
       }
       else if (tempArr.length >= 5) {
-        console.log('special tile 5');
+        // console.log('special tile 5');
         let idx = tempArr.indexOf(this.firstSelectedTile!);
         if (idx == -1) idx = tempArr.indexOf(this.secondSelectedTile!);
         if (idx == -1) idx = 0;
@@ -409,7 +410,7 @@ export class GameScene extends Phaser.Scene {
         let tilePos = this.getTilePos(this.tileGrid!, tempArr[idx]);
         if (this.tileGrid![tilePos.y][tilePos.x] instanceof TileSpecial) {
           specialTile.special = 'fullboard';
-          console.log('fullboard');
+          // console.log('fullboard');
         }
         this.tileGrid![tilePos.y][tilePos.x].destroy();
         this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
@@ -419,7 +420,7 @@ export class GameScene extends Phaser.Scene {
           let tile = tempArr[j];
           if (tile instanceof TileSpecial) {
             specialTile.special = 'fullboard';
-            console.log('fullboard');
+            // console.log('fullboard');
           }
           this.tweenManager.createTween({
             targets: tile,
@@ -437,6 +438,7 @@ export class GameScene extends Phaser.Scene {
 
         }
         this.tileGrid![tilePos.y][tilePos.x] = specialTile;
+        this.TileAnimationHandler.playSpecialTileParticle(specialTile);
       }
     }
     this.tweenManager.startAllTweens();
@@ -865,41 +867,16 @@ export class GameScene extends Phaser.Scene {
       this.lastInputTime = this.time.now;
       // console.log('player idle');
       let moves = this.getHint(this.tileGrid!);
-      console.log('idle' + moves.length);
+      // console.log('idle' + moves.length);
       if (moves.length > 0) {
-        this.add.particles(
-          moves[0][0].x + 32,
-          moves[0][0].y + 32,
-          'particle',
-          {
-            blendMode: 'ADD',
-            scale: { start: 0.5, end: 0 },
-            speed: { min: 100, max: 200 },
-            angle: { min: -100, max: -80 },
-            quantity: 5,
-            lifespan: 500,
-            duration: 300
-          }
-        );
-        this.add.particles(
-          moves[0][1].x + 32,
-          moves[0][1].y + 32,
-          'particle',
-          {
-            blendMode: 'ADD',
-            scale: { start: 0.5, end: 0 },
-            speed: { min: 100, max: 200 },
-            angle: { min: -100, max: -80 },
-            quantity: 5,
-            lifespan: 500,
-            duration: 300
-          }
-        ).on('complete', () => {
+        this.TileAnimationHandler.playHintParticle(moves[0][0]);
+        this.TileAnimationHandler.playHintParticle(moves[0][1]);
+        this.time.delayedCall(1000, () => {
           this.TileGridManager.idleTileGrid();
         });
       }
       else {
-        console.log('no moves');
+        // console.log('no moves');
       }
     }
   }

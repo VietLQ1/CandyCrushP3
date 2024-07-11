@@ -6,8 +6,9 @@ export class TileSpecial extends Tile {
     constructor(params: ImageConstructor, special: string) {
         super(params);
         this.special = special;
-        this.setAlpha(0.5);
+        this.init();
     }
     private init(): void {
+        //play special audio
     }
 }

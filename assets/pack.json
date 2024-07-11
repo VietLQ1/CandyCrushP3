@@ -82,6 +82,21 @@
         "type": "image",
         "key": "cloud",
         "url": "./assets/images/cloud.png"
+      },
+      {
+        "type": "image",
+        "key": "blue",
+        "url": "./assets/images/BlueHeart.png"
+      },
+      {
+        "type": "image",
+        "key": "pink",
+        "url": "./assets/images/PinkHeart.png"
+      },
+      {
+        "type": "image",
+        "key": "Yellow",
+        "url": "./assets/images/Yellow.png"
       }
     ]
   }

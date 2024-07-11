@@ -7,6 +7,7 @@ export class Tile extends Phaser.GameObjects.Sprite {
     // set image settings
     this.setOrigin(0, 0);
     this.setInteractive();
+    this.setDepth(1);
     this.anims.create({
       key: 'idle',
       frames: this.anims.generateFrameNumbers(params.texture, { start: 4, end: 5 }),
@@ -19,6 +20,12 @@ export class Tile extends Phaser.GameObjects.Sprite {
       frameRate: 3,
       repeat: -1,
     });
+    this.anims.create({
+      key: 'spin',
+      frames: this.anims.generateFrameNumbers(this.texture.key, { frames:[4, 12, 0, 8] }),
+      frameRate: 8,
+      repeat: -1,
+  });
     //this.setDisplayOrigin(32, 32);
     this.play('idle');
     this.scene.add.existing(this);
