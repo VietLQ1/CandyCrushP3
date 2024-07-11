@@ -484,6 +484,8 @@ export class GameScene extends Phaser.Scene {
         let tile = tileGrid[y][x];
         let cols: Tile[] = [];
         let rows: Tile[] = [];
+        let tIndex: number = 0;
+        let gIndex: number = 0;
         if (groups.indexOf(tile) == -1) {
           let Tgrouped = false;
           matches.forEach(match => {
@@ -502,6 +504,8 @@ export class GameScene extends Phaser.Scene {
             groups = [];
             continue;
           }
+          tIndex = groups.indexOf(tile);
+          gIndex = matches.indexOf(groups);
           for (let i = x + 1; i < tileGrid[y].length; i++) {
             if (tileGrid[y][x].texture.key === tileGrid[y][i].texture.key) {
               let grouped = false;
@@ -512,7 +516,7 @@ export class GameScene extends Phaser.Scene {
               });
               if (grouped) break;
               cols.push(tileGrid[y][i]);
-              if (Tgrouped)
+              if (Tgrouped && cols.length >= 2)
               {
                 dim[matches.indexOf(groups)] = 2;
                 // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
@@ -533,7 +537,7 @@ export class GameScene extends Phaser.Scene {
               });
               if (grouped) break;
               cols.push(tileGrid[y][i]);
-              if (Tgrouped)
+              if (Tgrouped && cols.length >= 2)
               {
                 dim[matches.indexOf(groups)] = 2;
                 // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
@@ -553,7 +557,7 @@ export class GameScene extends Phaser.Scene {
               });
               if (grouped) break;
               rows.push(tileGrid[j][x]);
-              if (Tgrouped)
+              if (Tgrouped && rows.length >= 2)
               {
                 dim[matches.indexOf(groups)] = 2;
                 // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
@@ -573,7 +577,7 @@ export class GameScene extends Phaser.Scene {
               });
               if (grouped) break;
               rows.push(tileGrid[j][x]);
-              if (Tgrouped)
+              if (Tgrouped && rows.length >= 2)
               {
                 dim[matches.indexOf(groups)] = 2;
                 // [groups[0], groups[groups.indexOf(tile)]] = [groups[groups.indexOf(tile)], groups[0]];
@@ -602,6 +606,7 @@ export class GameScene extends Phaser.Scene {
             //[matches[matches.indexOf(groups)][0], matches[matches.indexOf(groups)][matches[matches.indexOf(groups)].indexOf(tile)]] = [matches[matches.indexOf(groups)][matches[matches.indexOf(groups)].indexOf(tile)], matches[matches.indexOf(groups)][0]];
             if (rows.length >= 2) matches[matches.indexOf(groups)] = matches[matches.indexOf(groups)].concat(rows);
             if (cols.length >= 2) matches[matches.indexOf(groups)] = matches[matches.indexOf(groups)].concat(cols);
+            [matches[gIndex][0], matches[gIndex][tIndex]] = [matches[gIndex][tIndex], matches[gIndex][0]];
           }
         }
         groups = [];
