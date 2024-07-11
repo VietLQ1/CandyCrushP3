@@ -49,7 +49,7 @@ export class TileAnimationHandler
             particle = this.scene.add.particles(0, 0, 'pink', {
                 speed: { min: -100, max: 100 },
                 lifespan: 300,
-                scale: { start: 0.15, end: 0, ease: 'Sine.easeIn' },
+                scale: { start: 0.25, end: 0, ease: 'Sine.easeIn' },
                 // blendMode: 'ADD',
             }).startFollow(tile, CONST.tileWidth / 2, CONST.tileHeight / 2);
         }

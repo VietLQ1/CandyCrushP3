@@ -473,6 +473,12 @@ export class GameScene extends Phaser.Scene {
     let matches: Tile[][] = [];
     let groups: Tile[] = [];
     let dim: number[] = [];
+    if (this.firstSelectedTile && this.secondSelectedTile) {
+      if (this.secondSelectedTile instanceof TileSpecial && this.secondSelectedTile.special == 'fullboard') {
+        matches.push([this.secondSelectedTile]);
+        return matches;
+      }
+    }
     // Check for horizontal matches
     for (let y = 0; y < tileGrid.length; y++) {
       for (let x = 0; x < tileGrid[y].length; x++) {
