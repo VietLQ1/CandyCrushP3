@@ -5,6 +5,7 @@ import { TileSpecial } from '../objects/TileSpecial';
 import { TileGridManager } from '../utils/TileGridManger';
 import { TweenSyncManager } from '../utils/TweenSyncManager';
 import { Collision } from 'matter';
+import { TileAnimationHandler } from '../utils/TileAnimationHandler';
 
 enum GameState { IDLING, SWAPPING, REMOVING, FILLING, RESETING }
 export class GameScene extends Phaser.Scene {
@@ -17,6 +18,7 @@ export class GameScene extends Phaser.Scene {
   private tileGrid: Tile[][] | undefined;
   private tweenManager: TweenSyncManager;
   private TileGridManager: TileGridManager;
+  private TileAnimationHandler: TileAnimationHandler;
 
   // Selected Tiles
   private firstSelectedTile: Tile | undefined;
@@ -59,7 +61,8 @@ export class GameScene extends Phaser.Scene {
         this.tileGrid[y][x] = this.addTile(x, y);
       }
     }
-    this.TileGridManager = new TileGridManager(this, this.tileGrid);
+    this.TileGridManager = new TileGridManager(this, this.tileGrid, this.grid);
+    this.TileAnimationHandler = new TileAnimationHandler(this);
     // console.log(this.tweens.getTweens()[0].paused);
     this.tweenManager.startAllTweens();
     // console.log(this.tweens.getTweens()[0].paused);
@@ -122,18 +125,20 @@ export class GameScene extends Phaser.Scene {
     if (this.canMove && this.gameState == GameState.IDLING) {
       if (!this.firstSelectedTile) {
         this.firstSelectedTile = gameobject;
-        this.firstSelectedTile!.play('selected');
-        //add particle around the selected tile
+        // this.firstSelectedTile!.play('selected');
+        this.TileAnimationHandler.playTileAnimation(this.firstSelectedTile, 'selected');
+        this.TileGridManager.highlightTileGrid(this.getTilePos(this.tileGrid!, this.firstSelectedTile!));
       }
       else if (this.firstSelectedTile === gameobject) {
         // Deselect the first tile
         this.firstSelectedTile = undefined;
-        gameobject.play('idle');
+        this.TileAnimationHandler.playTileAnimation(gameobject, 'idle');
       }
       else {
         // So if we are here, we must have selected a second tile
         this.secondSelectedTile = gameobject;
-        this.secondSelectedTile!.play('selected');
+        this.TileAnimationHandler.playTileAnimation(this.secondSelectedTile, 'selected');
+        this.TileGridManager.highlightTileGrid(this.getTilePos(this.tileGrid!, this.secondSelectedTile!));
         let dx =
           Math.abs(this.firstSelectedTile.x - this.secondSelectedTile!.x) /
           CONST.tileWidth;
@@ -146,8 +151,8 @@ export class GameScene extends Phaser.Scene {
           this.canMove = false;
           this.swapTiles();
         }
-        this.firstSelectedTile.play('idle');
-        this.secondSelectedTile!.play('idle');
+        this.TileAnimationHandler.playTileAnimation(this.firstSelectedTile, 'idle');
+        this.TileAnimationHandler.playTileAnimation(this.secondSelectedTile, 'idle');
         if (dx > 1 || dy > 1 || (dx === 1 && dy === 1)) {
           this.tileUp();
         }

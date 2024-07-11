@@ -8,4 +8,6 @@ export class TileSpecial extends Tile {
         this.special = special;
         this.setAlpha(0.5);
     }
+    private init(): void {
+    }
 }
