@@ -1,3 +1,4 @@
+import { CONST } from "../const/const";
 import { Tile } from "../objects/Tile";
 
 export class TileAnimationHandler
@@ -21,6 +22,13 @@ export class TileAnimationHandler
         {
             return;
         }
-        
+        this.scene.add.particles(tile.x + CONST.tileWidth / 2, tile.y + CONST.tileHeight / 2, tile.texture.key, {
+            speed: 100,
+            lifespan: 500,
+            quantity: 10,
+            scale: { start: 0.5, end: 0 },
+            // emitZone: { type: 'edge', source: tile.getBounds(), quantity: 42 },
+            duration: 100
+        });
     }
 }

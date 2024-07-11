@@ -77,6 +77,11 @@
           "frameWidth": 64,
           "frameHeight": 64
         }
+      },
+      {
+        "type": "image",
+        "key": "cloud",
+        "url": "./assets/images/cloud.png"
       }
     ]
   }

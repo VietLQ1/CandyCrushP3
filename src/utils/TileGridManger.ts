@@ -28,9 +28,9 @@ export class TileGridManager
         {
             return;
         }
-        this.scene.add.particles(0, 0, 'flare', {
-            speed: 24,
-            lifespan: 1500,
+        this.scene.add.particles(0, 0, 'cloud', {
+            speed: 15,
+            lifespan: 200,
             quantity: 10,
             scale: { start: 0.2, end: 0 },
             emitZone: { type: 'edge', source: this.backGrid[tilePos.y][tilePos.x].getBounds(), quantity: 42 },
