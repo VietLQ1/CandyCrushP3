@@ -107,6 +107,15 @@
         "type": "image",
         "key": "progressFill",
         "url": "./assets/images/VolumeFill.png"
+      },
+      {
+        "type": "spritesheet",
+        "key": "raster",
+        "url": "./assets/images/raster.png",
+        "frameConfig": {
+          "frameWidth": 16,
+          "frameHeight": 16
+        }
       }
     ]
   }

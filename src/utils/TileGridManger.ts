@@ -33,7 +33,46 @@ export class TileGridManager
                     if (i === this.tileGrid.length - 1 && j === this.tileGrid[i].length - 1)
                     {
                         Phaser.Actions.PlaceOnCircle(this.tileGrid.flat(1), circle);
-
+                        this.scene.add.particles(254, 254, 'raster',
+                            {
+                                speedX: {min: -500, max: 500},
+                                speedY: -1500,
+                                lifespan: 5000,
+                                gravityY: 5000,
+                                frame: [0, 4, 8, 12, 16],
+                                // x: { min: 0, max: 800 },
+                                scaleX: {
+                                    onEmit: (particle) => {
+                                        return -1.0
+                                    },
+                                    onUpdate: (particle) => {
+                                        return (particle.scaleX > 1.0 ? -1.0 : particle.scaleX + 0.05)
+                                    }
+                                },
+                                rotate: {
+                                    onEmit: (particle) => {
+                                        return 0
+                                    },
+                                    onUpdate: (particle) => {
+                                        return particle.angle + 1
+                                    }
+                                },
+                                duration: 300,
+                                maxVelocityY: {
+                                    onEmit: (particle) => {
+                                        return -1500
+                                    },
+                                    onUpdate: (particle) => {
+                                        if (particle.velocityY >= 0)
+                                        {
+                                            return 200;
+                                        }
+                                        return 1500;
+                                    }
+                                },
+                                quantity: 3
+                            }
+                        );
 
         this.scene.tweens.add({
             targets: circle,

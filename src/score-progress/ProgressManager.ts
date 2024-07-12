@@ -17,7 +17,7 @@ export class ProgressManager
         this.progressFill.displayWidth = 0;
         // this.progressFill.displayHeight = 20;
         // this.scene.events.on('update', this.update, this);
-        this.milestone = 5000;
+        this.milestone = 100;
         let displayZone = this.scene.add.zone(0, 0, GameConfig.width as number, GameConfig.height as number).setOrigin(0, 0);
         Phaser.Display.Align.In.BottomCenter(this.progressBar, displayZone);
         Phaser.Display.Align.In.Center(this.progressFill, this.progressBar);
@@ -26,7 +26,7 @@ export class ProgressManager
     {
         if (this.progress === 1 && score === 0)
         {
-            this.milestone += 1000;
+            // this.milestone += 1000;
         } 
         this.progress = score / this.milestone;
         if(this.progress > 1)

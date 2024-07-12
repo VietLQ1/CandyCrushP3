@@ -898,7 +898,7 @@ export class GameScene extends Phaser.Scene {
     });
   }
   public update(time: number, delta: number): void {
-    console.log(this.gameState);
+    // console.log(this.gameState);
     // this.tileGrid![0][1].setAlpha(0.5);
     if (
       this.gameState == GameState.IDLING &&
