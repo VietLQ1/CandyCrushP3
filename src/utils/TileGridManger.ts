@@ -17,12 +17,28 @@ export class TileGridManager
     public transitionTileGrid(): void
     {
         const circle = new Phaser.Geom.Circle(224, 224, 192);
-        Phaser.Actions.PlaceOnCircle(this.tileGrid.flat(1), circle);
+        for (let i = 0; i < this.tileGrid.length; i++)
+        {
+            for (let j = 0; j < this.tileGrid[i].length; j++)
+            {
+                this.scene.tweens.add({
+                    targets: this.tileGrid[i][j],
+                    x: 224,
+                    y: 224,
+                    ease: 'Sine.easeInOut',
+                    duration: 500,
+                    repeat: 0,
+                    delay: i * 30 + j * 20,
+                }).on('complete', () => {
+                    if (i === this.tileGrid.length - 1 && j === this.tileGrid[i].length - 1)
+                    {
+                        Phaser.Actions.PlaceOnCircle(this.tileGrid.flat(1), circle);
+
 
         this.scene.tweens.add({
             targets: circle,
             scale: 1,
-            ease: 'Linear',
+            ease: 'Cubic.easeInOut',
             duration: 3000,
             repeat: 0,
             onUpdate: () => {
@@ -41,14 +57,21 @@ export class TileGridManager
                         ease: 'Sine.easeInOut',
                         duration: 1000,
                         repeat: 0,
+                        delay: y * 50 + x * 100,
                         yoyo: false,
+                    }).on('complete', () => {
+                        if (y === this.tileGrid.length - 1 && x === this.tileGrid[y].length - 1)
+                        {
+                            this.scene.events.emit('tileGridTransitionComplete');
+                        }
                     });
                 }
             }
-            this.scene.time.delayedCall(1000, () => {
-                this.scene.events.emit('tileGridTransitionComplete');
-            });
         });
+                    }
+                });
+            }
+        }
     }
     public idleTileGrid(): void
     {
@@ -60,10 +83,15 @@ export class TileGridManager
                     targets: this.tileGrid[i][j],
                     rotation: 0.1,
                     ease: 'sine.inout',
-                    duration: 300,
+                    duration: 200,
                     delay: i * 50,
                     repeat: 0,
                     yoyo: true,
+                }).on('complete', () => {
+                    if (i === this.tileGrid.length - 1 && j === this.tileGrid[i].length - 1)
+                    {
+                        this.scene.events.emit('tileGridIdleComplete');
+                    }
                 });
             }
         }

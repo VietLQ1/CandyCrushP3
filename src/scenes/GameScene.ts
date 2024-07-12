@@ -352,7 +352,7 @@ export class GameScene extends Phaser.Scene {
               this.TileAnimationHandler.playTileExplodeParticle(tile);
               tile.destroy();
               this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
-              this.ScoreManager.addScore(10);
+              this.ScoreManager.addScore(10 + 5 * i);
             });
             // this.TileAnimationHandler.playTileExplodeParticle(tile);
             // tile.destroy();
@@ -406,7 +406,7 @@ export class GameScene extends Phaser.Scene {
             if (this.tileGrid![tilePos1.y][tilePos1.x]) {
               tile.destroy();
               this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
-              this.ScoreManager.addScore(20);
+              this.ScoreManager.addScore(20 + 5 * i);
             }
           });
 
@@ -452,7 +452,7 @@ export class GameScene extends Phaser.Scene {
             if (this.tileGrid![tilePos1.y][tilePos1.x]) {
               tile.destroy();
               this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
-              this.ScoreManager.addScore(30);
+              this.ScoreManager.addScore(30 + 5 * i);
             }
           });
 
@@ -919,12 +919,20 @@ export class GameScene extends Phaser.Scene {
         this.TileAnimationHandler.playHintParticle(moves[0][0]);
         this.TileAnimationHandler.playHintParticle(moves[0][1]);
         this.time.delayedCall(1000, () => {
+          if (this.firstSelectedTile || this.secondSelectedTile) {
+            return;
+          }
+          this.gameState = GameState.TRANSITIONING;
           this.TileGridManager.idleTileGrid();
         });
       }
       else {
         // console.log('no moves');
       }
+      this.events.once('tileGridIdleComplete', () => {
+        this.gameState = GameState.IDLING;
+        this.lastInputTime = this.time.now;
+      });
     }
   }
 }
