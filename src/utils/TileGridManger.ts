@@ -1,5 +1,6 @@
 import { GameObjects } from "phaser";
 import { Tile } from "../objects/Tile";
+import { CONST } from "../const/const";
 
 export class TileGridManager
 {
@@ -12,12 +13,39 @@ export class TileGridManager
         this.scene = scene;
         this.tileGrid = tileGrid;
         this.backGrid = backGrid;
-        this.tiles = this.scene.add.group(tileGrid.flat());
     }
     public transitionTileGrid(): void
     {
-        const circle = new Phaser.Geom.Circle(224, 224, 64);
-        Phaser.Actions.PlaceOnCircle(this.tiles.getChildren(), circle);
+        const circle = new Phaser.Geom.Circle(224, 224, 192);
+        Phaser.Actions.PlaceOnCircle(this.tileGrid.flat(1), circle);
+
+        this.scene.tweens.add({
+            targets: circle,
+            scale: 1,
+            ease: 'Linear',
+            duration: 3000,
+            repeat: 0,
+            onUpdate: () => {
+                Phaser.Actions.RotateAroundDistance(this.tileGrid.flat(), circle, 0.02, circle.radius);
+            }
+        }
+        ).on('complete', () => {
+            for (let y = 0; y < this.tileGrid.length; y++)
+            {
+                for (let x = 0; x < this.tileGrid[y].length; x++)
+                {
+                    this.scene.tweens.add({
+                        targets: this.tileGrid[y][x],
+                        x: x * CONST.tileWidth,
+                        y: y * CONST.tileHeight,
+                        ease: 'Sine.easeInOut',
+                        duration: 1000,
+                        repeat: 0,
+                        yoyo: false,
+                    });
+                }
+            }
+        });
     }
     public idleTileGrid(): void
     {
@@ -27,7 +55,7 @@ export class TileGridManager
             {
                 this.scene.tweens.add({
                     targets: this.tileGrid[i][j],
-                    scale: 0.75,
+                    rotation: 0.1,
                     ease: 'sine.inout',
                     duration: 300,
                     delay: i * 50,

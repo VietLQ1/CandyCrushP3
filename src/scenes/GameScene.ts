@@ -72,7 +72,6 @@ export class GameScene extends Phaser.Scene {
     this.lastInputTime = 0;
     // Input
     this.input.on('gameobjectdown', this.tileDown, this);
-
     // Check if matches on the start
     this.events.once('tweensComplete', () => {
       // console.log(this.tweenManager.allTweens.length);
@@ -241,7 +240,7 @@ export class GameScene extends Phaser.Scene {
       // No match so just swap the tiles back to their original position and reset
       this.swapTiles();
       this.tileUp();
-      this.time.delayedCall(500, () => {
+      this.time.delayedCall(200, () => {
         if (matches.length == 0 && this.tweenManager.allTweens.length == 0) {
           this.gameState = GameState.IDLING;
           this.lastInputTime = this.time.now;
@@ -307,7 +306,7 @@ export class GameScene extends Phaser.Scene {
     this.tweenManager.startAllTweens();
     this.events.once('tweensComplete', () => {
       this.tileUp();
-      this.time.delayedCall(500, () => {
+      this.time.delayedCall(200, () => {
         // console.log('fill tile call');
         this.checkMatches();
       });
@@ -336,9 +335,20 @@ export class GameScene extends Phaser.Scene {
 
           // Remove the tile from the theoretical grid
           if (tilePos.x !== -1 && tilePos.y !== -1) {
-            this.TileAnimationHandler.playTileExplodeParticle(tile);
-            tile.destroy();
-            this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
+            this.tweenManager.createTween({
+              targets: tile,
+              alpha: 0.5,
+              duration: 50,
+              repeat: 0,
+              delay: 50 * i
+            }).on('complete', () => {
+              this.TileAnimationHandler.playTileExplodeParticle(tile);
+              tile.destroy();
+              this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
+            });
+            // this.TileAnimationHandler.playTileExplodeParticle(tile);
+            // tile.destroy();
+            // this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
           }
         }
       }
@@ -443,7 +453,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.tweenManager.startAllTweens();
     this.events.once('tweensComplete', () => {
-      this.time.delayedCall(500, () => {
+      this.time.delayedCall(200, () => {
         this.gameState = GameState.RESETING;
         this.resetTile();
       });
@@ -652,8 +662,8 @@ export class GameScene extends Phaser.Scene {
       }
     }
     else if (tile.special == '3x3') {
-      for (let y = tilePos.y - 1; y <= tilePos.y + 1; y++) {
-        for (let x = tilePos.x - 1; x <= tilePos.x + 1; x++) {
+      for (let y = tilePos.y - 2; y <= tilePos.y + 2; y++) {
+        for (let x = tilePos.x - 2; x <= tilePos.x + 2; x++) {
           if (y >= 0 && y < this.tileGrid!.length && x >= 0 && x < this.tileGrid![y].length) {
             let tile1 = this.tileGrid![y][x];
             if (tile1 && tile1 !== tile) {
@@ -868,6 +878,7 @@ export class GameScene extends Phaser.Scene {
 
   }
   public update(time: number, delta: number): void {
+    console.log(this.gameState);
     // this.tileGrid![0][1].setAlpha(0.5);
     if (this.gameState == GameState.IDLING && time - this.lastInputTime > 5000) {
       this.lastInputTime = this.time.now;

@@ -22,7 +22,7 @@ export class TileAnimationHandler
         }
         tile.play(key);
     }
-    public playTileExplodeParticle(tile: Tile | undefined): void
+    public playTileExplodeParticle(tile: Tile | undefined,  delay: number = 0): void
     {
         if (!tile)
         {
@@ -33,6 +33,7 @@ export class TileAnimationHandler
             lifespan: 500,
             quantity: 10,
             scale: { start: 0.5, end: 0 },
+            delay: delay,
             // emitZone: { type: 'edge', source: tile.getBounds(), quantity: 42 },
             duration: 100
         });
