@@ -97,6 +97,16 @@
         "type": "image",
         "key": "Yellow",
         "url": "./assets/images/Yellow.png"
+      },
+      {
+        "type": "image",
+        "key": "progressBar",
+        "url": "./assets/images/VolumeBarEmpty.png"
+      },
+      {
+        "type": "image",
+        "key": "progressFill",
+        "url": "./assets/images/VolumeFill.png"
       }
     ]
   }

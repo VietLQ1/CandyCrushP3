@@ -6,8 +6,10 @@ import { TileGridManager } from '../utils/TileGridManger';
 import { TweenSyncManager } from '../utils/TweenSyncManager';
 import { Collision } from 'matter';
 import { TileAnimationHandler } from '../utils/TileAnimationHandler';
+import { ScoreManager } from '../score-progress/ScoreManager';
+import { ProgressManager } from '../score-progress/ProgressManager';
 
-enum GameState { IDLING, SWAPPING, REMOVING, FILLING, RESETING }
+enum GameState { IDLING, SWAPPING, REMOVING, FILLING, RESETING, TRANSITIONING}
 export class GameScene extends Phaser.Scene {
   // Variables
   private canMove: boolean;
@@ -25,7 +27,9 @@ export class GameScene extends Phaser.Scene {
   private secondSelectedTile: Tile | undefined;
 
   private lastInputTime: number;
-
+  // Score and Progress
+  private ScoreManager: ScoreManager;
+  private ProgressManager: ProgressManager;
   constructor() {
     super({
       key: 'GameScene'
@@ -70,6 +74,9 @@ export class GameScene extends Phaser.Scene {
     this.firstSelectedTile = undefined;
     this.secondSelectedTile = undefined;
     this.lastInputTime = 0;
+    // Score and Progress
+    this.ScoreManager = new ScoreManager(this);
+    this.ProgressManager = new ProgressManager(this);
     // Input
     this.input.on('gameobjectdown', this.tileDown, this);
     // Check if matches on the start
@@ -345,6 +352,7 @@ export class GameScene extends Phaser.Scene {
               this.TileAnimationHandler.playTileExplodeParticle(tile);
               tile.destroy();
               this.tileGrid![tilePos.y][tilePos.x] = undefined as any;
+              this.ScoreManager.addScore(10);
             });
             // this.TileAnimationHandler.playTileExplodeParticle(tile);
             // tile.destroy();
@@ -398,6 +406,7 @@ export class GameScene extends Phaser.Scene {
             if (this.tileGrid![tilePos1.y][tilePos1.x]) {
               tile.destroy();
               this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+              this.ScoreManager.addScore(20);
             }
           });
 
@@ -443,6 +452,7 @@ export class GameScene extends Phaser.Scene {
             if (this.tileGrid![tilePos1.y][tilePos1.x]) {
               tile.destroy();
               this.tileGrid![tilePos1.y][tilePos1.x] = undefined as any;
+              this.ScoreManager.addScore(30);
             }
           });
 
@@ -455,6 +465,7 @@ export class GameScene extends Phaser.Scene {
     this.events.once('tweensComplete', () => {
       this.time.delayedCall(200, () => {
         this.gameState = GameState.RESETING;
+        this.ProgressManager.updateProgress(this.ScoreManager.Score);
         this.resetTile();
       });
     });
@@ -877,9 +888,28 @@ export class GameScene extends Phaser.Scene {
     return moves;
 
   }
+  private changeLevel(): void {
+    this.TileGridManager.transitionTileGrid();
+    this.events.once('tweensComplete', () => {
+      this.gameState = GameState.IDLING;
+      this.ScoreManager.resetScore();
+      this.ProgressManager.updateProgress(this.ScoreManager.Score);
+      this.lastInputTime = this.time.now;
+    });
+  }
   public update(time: number, delta: number): void {
     console.log(this.gameState);
     // this.tileGrid![0][1].setAlpha(0.5);
+    if (
+      this.gameState == GameState.IDLING &&
+      this.canMove &&
+      this.ProgressManager.Progress >= 1
+    )
+    {
+      this.gameState = GameState.TRANSITIONING;
+      this.lastInputTime = this.time.now;
+      this.changeLevel();
+    }
     if (this.gameState == GameState.IDLING && time - this.lastInputTime > 5000) {
       this.lastInputTime = this.time.now;
       // console.log('player idle');

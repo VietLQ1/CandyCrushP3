@@ -45,6 +45,9 @@ export class TileGridManager
                     });
                 }
             }
+            this.scene.time.delayedCall(1000, () => {
+                this.scene.events.emit('tileGridTransitionComplete');
+            });
         });
     }
     public idleTileGrid(): void
