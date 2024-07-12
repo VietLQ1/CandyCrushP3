@@ -1,0 +1,113 @@
+{
+  "preload": {
+    "files": [
+      {
+        "type": "image",
+        "key": "tileback",
+        "url": "./assets/images/tile-back.png"
+      },
+      {
+        "type": "spritesheet",
+        "key": "reimu",
+        "url": "./assets/images/reimu.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "marisa",
+        "url": "./assets/images/marisa.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "cirno",
+        "url": "./assets/images/cirno.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "remilia",
+        "url": "./assets/images/remilia.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "patchouli",
+        "url": "./assets/images/patchouli.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "flandre",
+        "url": "./assets/images/flandre.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "sakuya",
+        "url": "./assets/images/sakuya.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "spritesheet",
+        "key": "hongmeiling",
+        "url": "./assets/images/hongmeiling.png",
+        "frameConfig": {
+          "frameWidth": 64,
+          "frameHeight": 64
+        }
+      },
+      {
+        "type": "image",
+        "key": "cloud",
+        "url": "./assets/images/cloud.png"
+      },
+      {
+        "type": "image",
+        "key": "blue",
+        "url": "./assets/images/BlueHeart.png"
+      },
+      {
+        "type": "image",
+        "key": "pink",
+        "url": "./assets/images/PinkHeart.png"
+      },
+      {
+        "type": "image",
+        "key": "Yellow",
+        "url": "./assets/images/Yellow.png"
+      },
+      {
+        "type": "image",
+        "key": "progressBar",
+        "url": "./assets/images/VolumeBarEmpty.png"
+      },
+      {
+        "type": "image",
+        "key": "progressFill",
+        "url": "./assets/images/VolumeFill.png"
+      }
+    ]
+  }
+}
