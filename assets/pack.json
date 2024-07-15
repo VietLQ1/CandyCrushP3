@@ -121,6 +121,11 @@
           "frameWidth": 16,
           "frameHeight": 16
         }
+      },
+      {
+        "type": "image",
+        "key": "stripe",
+        "url": "./assets/images/stripes_destroy.png"
       }
     ]
   }

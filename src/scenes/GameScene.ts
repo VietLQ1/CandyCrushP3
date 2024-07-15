@@ -426,7 +426,7 @@ export class GameScene extends Phaser.Scene {
           y: tempArr[idx].y,
           texture: tempArr[idx].texture.key,
           frame: 5
-        }, '3x3');
+        }, 'rainbow');
         let tilePos = this.getTilePos(this.tileGrid!, tempArr[idx]);
         if (this.tileGrid![tilePos.y][tilePos.x] instanceof TileSpecial) {
           specialTile.special = 'fullboard';
@@ -642,20 +642,6 @@ export class GameScene extends Phaser.Scene {
     let tilePos = this.getTilePos(this.tileGrid!, tile);
     if (tilePos.x == -1 || tilePos.y == -1) return;
     if (tile.special == 'row') {
-      // for (let x = 0; x < this.tileGrid![tilePos.y].length; x++) {
-      //   let tile1 = this.tileGrid![tilePos.y][x];
-      //   if (tile1 && tile1 !== tile) {
-      //     let grouped = false;
-      //     matches.forEach(match => {
-      //       if (match.indexOf(tile1) !== -1) {
-      //         grouped = true;
-      //       }
-      //     });
-      //     if (!grouped) {
-      //       matches.push([tile1]);
-      //     }
-      //   }
-      // }
       for (let i = 1; i < this.tileGrid![tilePos.y].length; i++) {
         if (tilePos.x - i >= 0) {
           let tile1 = this.tileGrid![tilePos.y][tilePos.x - i];
@@ -688,20 +674,6 @@ export class GameScene extends Phaser.Scene {
       }
     }
     else if (tile.special == 'column') {
-      // for (let y = 0; y < this.tileGrid!.length; y++) {
-      //   let tile1 = this.tileGrid![y][tilePos.x];
-      //   if (tile1 && tile1 !== tile) {
-      //     let grouped = false;
-      //     matches.forEach(match => {
-      //       if (match.indexOf(tile1) !== -1) {
-      //         grouped = true;
-      //       }
-      //     });
-      //     if (!grouped) {
-      //       matches.push([tile1]);
-      //     }
-      //   }
-      // }
       for (let i = 1; i < this.tileGrid!.length; i++) {
         if (tilePos.y - i >= 0) {
           let tile1 = this.tileGrid![tilePos.y - i][tilePos.x];
@@ -733,21 +705,39 @@ export class GameScene extends Phaser.Scene {
         }
       }
     }
-    else if (tile.special == '3x3') {
-      for (let y = tilePos.y - 2; y <= tilePos.y + 2; y++) {
-        for (let x = tilePos.x - 2; x <= tilePos.x + 2; x++) {
-          if (y >= 0 && y < this.tileGrid!.length && x >= 0 && x < this.tileGrid![y].length) {
-            let tile1 = this.tileGrid![y][x];
-            if (tile1 && tile1 !== tile) {
-              let grouped = false;
-              matches.forEach(match => {
-                if (match.indexOf(tile1) !== -1) {
-                  grouped = true;
-                }
-              });
-              if (!grouped) {
-                matches.push([tile1]);
+    // else if (tile.special == '3x3') {
+    //   for (let y = tilePos.y - 2; y <= tilePos.y + 2; y++) {
+    //     for (let x = tilePos.x - 2; x <= tilePos.x + 2; x++) {
+    //       if (y >= 0 && y < this.tileGrid!.length && x >= 0 && x < this.tileGrid![y].length) {
+    //         let tile1 = this.tileGrid![y][x];
+    //         if (tile1 && tile1 !== tile) {
+    //           let grouped = false;
+    //           matches.forEach(match => {
+    //             if (match.indexOf(tile1) !== -1) {
+    //               grouped = true;
+    //             }
+    //           });
+    //           if (!grouped) {
+    //             matches.push([tile1]);
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    else if (tile.special == 'rainbow') {
+      for (let y = 0; y < this.tileGrid!.length; y++) {
+        for (let x = 0; x < this.tileGrid![y].length; x++) {
+          let tile1 = this.tileGrid![y][x];
+          if (tile1 && tile1 !== tile && tile1.texture.key === tile.texture.key) {
+            let grouped = false;
+            matches.forEach(match => {
+              if (match.indexOf(tile1) !== -1) {
+                grouped = true;
               }
+            });
+            if (!grouped) {
+              matches.push([tile1]);
             }
           }
         }

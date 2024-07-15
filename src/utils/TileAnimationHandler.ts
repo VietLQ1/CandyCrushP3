@@ -1,4 +1,5 @@
 import { CONST } from "../const/const";
+import { StripeEffect } from "../objects/StripeEffect";
 import { Tile } from "../objects/Tile";
 import { TileSpecial } from "../objects/TileSpecial";
 
@@ -37,6 +38,23 @@ export class TileAnimationHandler
             // emitZone: { type: 'edge', source: tile.getBounds(), quantity: 42 },
             duration: 100
         });
+        if (tile instanceof TileSpecial)
+        {
+            if (tile.special === 'row')
+            {
+                let stripeLeft = new StripeEffect(this.scene, tile.x + 32, tile.y + 32, 'left');
+                let stripeRight = new StripeEffect(this.scene, tile.x + 32, tile.y + 32, 'right');
+                stripeLeft.playEffect();
+                stripeRight.playEffect();
+            }
+            else if (tile.special === 'column')
+            {
+                let stripeUp = new StripeEffect(this.scene, tile.x + 32, tile.y + 32, 'up');
+                let stripeDown = new StripeEffect(this.scene, tile.x + 32, tile.y + 32, 'down');
+                stripeUp.playEffect();
+                stripeDown.playEffect();
+            }
+        }
     }
     public playSpecialTileParticle(tile: TileSpecial | undefined): void
     {
@@ -60,17 +78,17 @@ export class TileAnimationHandler
                 speed: { min: -100, max: 100 },
                 lifespan: 300,
                 scale: { start: 0.15, end: 0, ease: 'Sine.easeIn' },
-                blendMode: 'ADD',
+                // blendMode: 'ADD',
                 angle: { min: -100, max: -80},
             }).startFollow(tile, CONST.tileWidth / 2, CONST.tileHeight / 2);
         }
-        else if (tile.special === '3x3')
+        else if (tile.special === 'rainbow')
         {
             particle = this.scene.add.particles(0, 0, 'blue', {
                 speed: { min: -100, max: 100 },
                 lifespan: 300,
                 scale: { start: 0.15, end: 0, ease: 'Sine.easeIn' },
-                // blendMode: 'ADD',
+                blendMode: 'ADD',
             }).startFollow(tile, CONST.tileWidth / 2, CONST.tileHeight / 2);
         }
         tile.on('destroy', () => {
