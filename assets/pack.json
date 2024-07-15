@@ -109,6 +109,11 @@
         "url": "./assets/images/VolumeFill.png"
       },
       {
+        "type": "image",
+        "key": "progressBorder",
+        "url": "./assets/images/VolumeBarBorder.png"
+      },
+      {
         "type": "spritesheet",
         "key": "raster",
         "url": "./assets/images/raster.png",

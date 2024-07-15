@@ -88,14 +88,14 @@ export class TileAnimationHandler
             0,
             'Yellow',
             {
-                speed: 5,
+                speed: 1,
                 lifespan: 1000,
                 quantity: 10,
                 scale: { start: 0.2, end: 0 },
                 duration: 1000,
                 emitZone: { type: 'edge', source: tile.getBounds(), quantity: 32 },
                 blendMode: 'ADD',
-                frequency: 16,
+                frequency: 8,
                 stopAfter: 32
             }
           );

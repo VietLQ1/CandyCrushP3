@@ -14,6 +14,7 @@ export class ProgressManager
         this.progress = 0;
         this.progressBar = this.scene.add.nineslice(0, 0 , 'progressBar', 0, 400).setOrigin(0, 0);
         this.progressFill = this.scene.add.nineslice(10, 0, 'progressFill', 0, 390).setOrigin(0, 0);
+        let border = this.scene.add.nineslice(0, 0, 'progressBorder', 0, 400).setOrigin(0, 0);
         this.progressFill.displayWidth = 0;
         // this.progressFill.displayHeight = 20;
         // this.scene.events.on('update', this.update, this);
@@ -21,6 +22,7 @@ export class ProgressManager
         let displayZone = this.scene.add.zone(0, 0, GameConfig.width as number, GameConfig.height as number).setOrigin(0, 0);
         Phaser.Display.Align.In.BottomCenter(this.progressBar, displayZone);
         Phaser.Display.Align.In.Center(this.progressFill, this.progressBar);
+        Phaser.Display.Align.In.BottomCenter(border, displayZone);
     }
     public updateProgress(score: number): void
     {
