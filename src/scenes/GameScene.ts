@@ -59,7 +59,7 @@ export class GameScene extends Phaser.Scene {
         }
         else
         {
-          tile.setAlpha(0.75);
+          tile.setAlpha(0.69);
         }
         this.grid[y][x] = tile;
       }
@@ -712,26 +712,6 @@ export class GameScene extends Phaser.Scene {
         }
       }
     }
-    // else if (tile.special == '3x3') {
-    //   for (let y = tilePos.y - 2; y <= tilePos.y + 2; y++) {
-    //     for (let x = tilePos.x - 2; x <= tilePos.x + 2; x++) {
-    //       if (y >= 0 && y < this.tileGrid!.length && x >= 0 && x < this.tileGrid![y].length) {
-    //         let tile1 = this.tileGrid![y][x];
-    //         if (tile1 && tile1 !== tile) {
-    //           let grouped = false;
-    //           matches.forEach(match => {
-    //             if (match.indexOf(tile1) !== -1) {
-    //               grouped = true;
-    //             }
-    //           });
-    //           if (!grouped) {
-    //             matches.push([tile1]);
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
     else if (tile.special == 'rainbow') {
       for (let y = 0; y < this.tileGrid!.length; y++) {
         for (let x = 0; x < this.tileGrid![y].length; x++) {
@@ -953,6 +933,7 @@ export class GameScene extends Phaser.Scene {
       this.ScoreManager.resetScore();
       this.ProgressManager.updateProgress(this.ScoreManager.Score);
       this.lastInputTime = this.time.now;
+      this.checkMatches();
     });
   }
   public update(time: number, delta: number): void {
@@ -986,6 +967,14 @@ export class GameScene extends Phaser.Scene {
       }
       else {
         // console.log('no moves');
+        this.lastInputTime = this.time.now;
+        this.gameState = GameState.TRANSITIONING;
+        this.TileGridManager.transitionTileGrid();
+        this.events.once('tweensComplete', () => {
+          this.gameState = GameState.IDLING;
+          this.lastInputTime = this.time.now;
+          this.checkMatches();
+        });
       }
       this.events.once('tileGridIdleComplete', () => {
         this.gameState = GameState.IDLING;

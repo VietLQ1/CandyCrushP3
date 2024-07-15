@@ -70,8 +70,9 @@ export class TileGridManager {
     }
     public unhighlightTileGrid(): void {
         for (let i = 0; i < this.tileHighlight.length; i++) {
-            this.tileHighlight[i].destroy();
+            this.tileHighlight[i].stop();
         }
+        this.tileHighlight = [];
     }
     private spinCicle(): void {
         const circle = new Phaser.Geom.Circle(224, 224, 192);
@@ -115,6 +116,9 @@ export class TileGridManager {
         });
     }
     private returnToGrid(): void {
+        for (let i = 0; i < this.tileGrid.length; i++) {
+            Phaser.Utils.Array.Shuffle(this.tileGrid[i]);
+        }
         for (let y = 0; y < this.tileGrid.length; y++) {
             for (let x = 0; x < this.tileGrid[y].length; x++) {
                 // this.tileGrid[y][x].setTexture(CONST.candyTypes[Phaser.Math.RND.between(0, CONST.candyTypes.length - 1)]);
