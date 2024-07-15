@@ -84,17 +84,19 @@ export class TileAnimationHandler
             return;
         }
         this.scene.add.particles(
-            tile.x + 32,
-            tile.y + 32,
+            0,
+            0,
             'Yellow',
             {
-              blendMode: 'ADD',
-              scale: { start: 0.3, end: 0 },
-              speed: { min: 100, max: 200 },
-              angle: { min: -100, max: -80 },
-              quantity: 5,
-              lifespan: 350,
-              duration: 300
+                speed: 5,
+                lifespan: 1000,
+                quantity: 10,
+                scale: { start: 0.2, end: 0 },
+                duration: 1000,
+                emitZone: { type: 'edge', source: tile.getBounds(), quantity: 32 },
+                blendMode: 'ADD',
+                frequency: 16,
+                stopAfter: 32
             }
           );
     }

@@ -144,14 +144,14 @@ export class GameScene extends Phaser.Scene {
         // So if we are here, we must have selected a second tile
         this.secondSelectedTile = gameobject;
         this.TileAnimationHandler.playTileAnimation(this.secondSelectedTile, 'selected');
-        this.TileGridManager.highlightTileGrid(this.getTilePos(this.tileGrid!, this.secondSelectedTile!));
+        this.TileGridManager.highlightTileGrid(this.getTilePos(this.tileGrid!, this.secondSelectedTile!), 300);
         let dx =
           Math.abs(this.firstSelectedTile.x - this.secondSelectedTile!.x) /
           CONST.tileWidth;
         let dy =
           Math.abs(this.firstSelectedTile.y - this.secondSelectedTile!.y) /
           CONST.tileHeight;
-
+        this.TileGridManager.unhighlightTileGrid();
         // Check if the selected tiles are both in range to make a move
         if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
           this.canMove = false;
