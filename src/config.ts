@@ -10,7 +10,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   parent: 'game',
   scene: [BootScene, GameScene],
   backgroundColor: '#de3412',
-  render: { pixelArt: true },
+  render: { pixelArt: false, antialias: true },
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH

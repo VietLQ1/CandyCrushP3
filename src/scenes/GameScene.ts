@@ -53,7 +53,14 @@ export class GameScene extends Phaser.Scene {
           x * CONST.tileWidth,
           y * CONST.tileHeight,
           'tileback'
-        ).setDisplaySize(CONST.tileWidth, CONST.tileHeight).setDisplayOrigin(0, 0).setAlpha(0.5);
+        ).setDisplaySize(CONST.tileWidth, CONST.tileHeight).setDisplayOrigin(0, 0);
+        if ((x + y) % 2 == 0) {
+          tile.setAlpha(0.5);
+        }
+        else
+        {
+          tile.setAlpha(0.75);
+        }
         this.grid[y][x] = tile;
       }
     }
