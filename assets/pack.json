@@ -109,6 +109,11 @@
         "url": "./assets/images/VolumeFill.png"
       },
       {
+        "type": "image",
+        "key": "progressBorder",
+        "url": "./assets/images/VolumeBarBorder.png"
+      },
+      {
         "type": "spritesheet",
         "key": "raster",
         "url": "./assets/images/raster.png",
@@ -116,6 +121,11 @@
           "frameWidth": 16,
           "frameHeight": 16
         }
+      },
+      {
+        "type": "image",
+        "key": "stripe",
+        "url": "./assets/images/stripes_destroy.png"
       }
     ]
   }
