@@ -139,6 +139,7 @@ export class GameScene extends Phaser.Scene {
         // Deselect the first tile
         this.firstSelectedTile = undefined;
         this.TileAnimationHandler.playTileAnimation(gameobject, 'idle');
+        this.TileGridManager.unhighlightTileGrid();
       }
       else {
         // So if we are here, we must have selected a second tile
@@ -641,33 +642,93 @@ export class GameScene extends Phaser.Scene {
     let tilePos = this.getTilePos(this.tileGrid!, tile);
     if (tilePos.x == -1 || tilePos.y == -1) return;
     if (tile.special == 'row') {
-      for (let x = 0; x < this.tileGrid![tilePos.y].length; x++) {
-        let tile1 = this.tileGrid![tilePos.y][x];
-        if (tile1 && tile1 !== tile) {
-          let grouped = false;
-          matches.forEach(match => {
-            if (match.indexOf(tile1) !== -1) {
-              grouped = true;
+      // for (let x = 0; x < this.tileGrid![tilePos.y].length; x++) {
+      //   let tile1 = this.tileGrid![tilePos.y][x];
+      //   if (tile1 && tile1 !== tile) {
+      //     let grouped = false;
+      //     matches.forEach(match => {
+      //       if (match.indexOf(tile1) !== -1) {
+      //         grouped = true;
+      //       }
+      //     });
+      //     if (!grouped) {
+      //       matches.push([tile1]);
+      //     }
+      //   }
+      // }
+      for (let i = 1; i < this.tileGrid![tilePos.y].length; i++) {
+        if (tilePos.x - i >= 0) {
+          let tile1 = this.tileGrid![tilePos.y][tilePos.x - i];
+          if (tile1 && tile1 !== tile) {
+            let grouped = false;
+            matches.forEach(match => {
+              if (match.indexOf(tile1) !== -1) {
+                grouped = true;
+              }
+            });
+            if (!grouped) {
+              matches.push([tile1]);
             }
-          });
-          if (!grouped) {
-            matches.push([tile1]);
+          }
+        }
+        if (tilePos.x + i < this.tileGrid![tilePos.y].length) {
+          let tile1 = this.tileGrid![tilePos.y][tilePos.x + i];
+          if (tile1 && tile1 !== tile) {
+            let grouped = false;
+            matches.forEach(match => {
+              if (match.indexOf(tile1) !== -1) {
+                grouped = true;
+              }
+            });
+            if (!grouped) {
+              matches.push([tile1]);
+            }
           }
         }
       }
     }
     else if (tile.special == 'column') {
-      for (let y = 0; y < this.tileGrid!.length; y++) {
-        let tile1 = this.tileGrid![y][tilePos.x];
-        if (tile1 && tile1 !== tile) {
-          let grouped = false;
-          matches.forEach(match => {
-            if (match.indexOf(tile1) !== -1) {
-              grouped = true;
+      // for (let y = 0; y < this.tileGrid!.length; y++) {
+      //   let tile1 = this.tileGrid![y][tilePos.x];
+      //   if (tile1 && tile1 !== tile) {
+      //     let grouped = false;
+      //     matches.forEach(match => {
+      //       if (match.indexOf(tile1) !== -1) {
+      //         grouped = true;
+      //       }
+      //     });
+      //     if (!grouped) {
+      //       matches.push([tile1]);
+      //     }
+      //   }
+      // }
+      for (let i = 1; i < this.tileGrid!.length; i++) {
+        if (tilePos.y - i >= 0) {
+          let tile1 = this.tileGrid![tilePos.y - i][tilePos.x];
+          if (tile1 && tile1 !== tile) {
+            let grouped = false;
+            matches.forEach(match => {
+              if (match.indexOf(tile1) !== -1) {
+                grouped = true;
+              }
+            });
+            if (!grouped) {
+              matches.push([tile1]);
             }
-          });
-          if (!grouped) {
-            matches.push([tile1]);
+          }
+        }
+        if (tilePos.y + i < this.tileGrid!.length) {
+          let tile1 = this.tileGrid![tilePos.y + i][tilePos.x];
+          if (tile1 && tile1 !== tile) {
+            let grouped = false;
+            matches.forEach(match => {
+              if (match.indexOf(tile1) !== -1) {
+                grouped = true;
+              }
+            });
+            if (!grouped) {
+              matches.push([tile1]);
+            }
           }
         }
       }
