@@ -8,6 +8,7 @@ export class StripeEffect extends TileEffect
     {
         super(scene, x, y, 'stripe');
         this.direction = direction;
+        this.effect.setTint(0xFFB6E5);
     }
     public playEffect(): void
     {

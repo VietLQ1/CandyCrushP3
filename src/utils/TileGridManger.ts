@@ -117,6 +117,7 @@ export class TileGridManager {
     private returnToGrid(): void {
         for (let y = 0; y < this.tileGrid.length; y++) {
             for (let x = 0; x < this.tileGrid[y].length; x++) {
+                // this.tileGrid[y][x].setTexture(CONST.candyTypes[Phaser.Math.RND.between(0, CONST.candyTypes.length - 1)]);
                 this.scene.tweens.add({
                     targets: this.tileGrid[y][x],
                     x: x * CONST.tileWidth,
