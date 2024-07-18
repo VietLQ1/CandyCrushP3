@@ -27,6 +27,17 @@ export class TweenSyncManager{
         if(this.scene.tweens.getTweens().length === 0 && !this.emitted){
             this.scene.events.emit('tweensComplete');
             // this.emitted = true;
+            return;
+        }
+        let ignorable: boolean = true;
+        for (let tween of this.allTweens){
+            if(tween.totalTargets == 1){
+                ignorable = false;
+                break;
+            }
+        }
+        if(ignorable && !this.emitted){
+            this.scene.events.emit('tweensComplete');
         }
     }
 }

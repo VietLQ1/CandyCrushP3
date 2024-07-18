@@ -28,6 +28,7 @@ export class TileGridManager {
                 }).on('complete', () => {
                     if (i === this.tileGrid.length - 1 && j === this.tileGrid[i].length - 1) {
                         this.spinCicle();
+                        // this.spinRectangle();
                     }
                 });
             }
@@ -37,7 +38,7 @@ export class TileGridManager {
         for (let i = 0; i < this.tileGrid.length; i++) {
             for (let j = 0; j < this.tileGrid[i].length; j++) {
                 this.scene.tweens.add({
-                    targets: this.tileGrid[i][j],
+                    targets: [this.tileGrid[i][j] , this.backGrid[i][j]],
                     rotation: 0.1,
                     ease: 'sine.inout',
                     duration: 200,
@@ -49,6 +50,7 @@ export class TileGridManager {
                         this.scene.events.emit('tileGridIdleComplete');
                     }
                 });
+                
             }
         }
     }
@@ -95,9 +97,6 @@ export class TileGridManager {
     private spinRectangle(): void {
         const rect = new Phaser.Geom.Rectangle(32, 32, 384, 384);
         Phaser.Actions.PlaceOnRectangle(this.tileGrid.flat(1), rect);
-        const centerX = rect.x + rect.width / 2;
-        const centerY = rect.y + rect.height / 2;
-        let angle = 0;
         this.launchConfetti();
         this.scene.tweens.add({
             targets: rect,
@@ -106,10 +105,10 @@ export class TileGridManager {
             ease: 'Cubic.easeInOut',
             duration: 3000,
             repeat: 0,
-            onUpdate: () => {
-                angle += 0.02;
-                Phaser.Actions.RotateAroundDistance(this.tileGrid.flat(), {x: centerX, y: centerY}, angle, Math.max(rect.width, rect.height) / 2);
-            }
+            // onUpdate: () => {
+            //     angle += 0.02;
+            //     Phaser.Actions.RotateAroundDistance(this.tileGrid.flat(), {x: centerX, y: centerY}, angle, Math.max(rect.width, rect.height) / 2);
+            // }
         }
         ).on('complete', () => {
             this.returnToGrid();

@@ -118,7 +118,7 @@ export class GameScene extends Phaser.Scene {
       targets: newTile,
       y: y * CONST.tileHeight,
       ease: 'Quintic.easeInOut',
-      duration: 500,
+      duration: 300,
       repeat: 0,
       yoyo: false
     });
@@ -206,7 +206,7 @@ export class GameScene extends Phaser.Scene {
         x: this.secondSelectedTile.x,
         y: this.secondSelectedTile.y,
         ease: 'Quintic.easeInOut',
-        duration: 400,
+        duration: 300,
         repeat: 0,
         yoyo: false
       });
@@ -216,7 +216,7 @@ export class GameScene extends Phaser.Scene {
         x: this.firstSelectedTile.x,
         y: this.firstSelectedTile.y,
         ease: 'Quintic.easeInOut',
-        duration: 400,
+        duration: 300,
         repeat: 0,
         yoyo: false,
       });
@@ -255,7 +255,7 @@ export class GameScene extends Phaser.Scene {
       // No match so just swap the tiles back to their original position and reset
       this.swapTiles();
       this.tileUp();
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(100, () => {
         if (matches.length == 0 && this.tweenManager.allTweens.length == 0) {
           this.gameState = GameState.IDLING;
           this.lastInputTime = this.time.now;
@@ -283,7 +283,7 @@ export class GameScene extends Phaser.Scene {
               targets: tempTile,
               y: CONST.tileHeight * y,
               ease: 'Quintic.easeInOut',
-              duration: 500,
+              duration: 300,
               repeat: 0,
               yoyo: false
             });
@@ -321,7 +321,7 @@ export class GameScene extends Phaser.Scene {
     this.tweenManager.startAllTweens();
     this.events.once('tweensComplete', () => {
       this.tileUp();
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(100, () => {
         // console.log('fill tile call');
         this.checkMatches();
       });
@@ -471,7 +471,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.tweenManager.startAllTweens();
     this.events.once('tweensComplete', () => {
-      this.time.delayedCall(200, () => {
+      this.time.delayedCall(100, () => {
         this.gameState = GameState.RESETING;
         this.ProgressManager.updateProgress(this.ScoreManager.Score);
         this.resetTile();
@@ -980,6 +980,7 @@ export class GameScene extends Phaser.Scene {
   public update(time: number, delta: number): void {
     // console.log(this.gameState);
     // this.tileGrid![0][1].setAlpha(0.5);
+    console.log(this.tweens.getTweens());
     if (
       this.gameState == GameState.IDLING &&
       this.canMove &&
@@ -999,10 +1000,10 @@ export class GameScene extends Phaser.Scene {
         this.TileAnimationHandler.playHintParticle(moves[0][0]);
         this.TileAnimationHandler.playHintParticle(moves[0][1]);
         this.time.delayedCall(1000, () => {
-          if (this.firstSelectedTile || this.secondSelectedTile) {
-            return;
-          }
-          this.gameState = GameState.TRANSITIONING;
+          // if (this.firstSelectedTile || this.secondSelectedTile) {
+          //   return;
+          // }
+          // this.gameState = GameState.TRANSITIONING;
           this.TileGridManager.idleTileGrid();
         });
       }
