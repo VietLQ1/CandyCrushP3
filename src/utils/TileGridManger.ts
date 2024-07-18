@@ -90,14 +90,16 @@ export class TileGridManager {
                 Phaser.Actions.RotateAroundDistance(this.tileGrid.flat(), circle, 0.02, circle.radius);
             }
         }
-        ).on('complete', () => {
+        ).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
             this.returnToGrid();
         });
     }
     private spinRectangle(): void {
         const rect = new Phaser.Geom.Rectangle(32, 32, 384, 384);
-        Phaser.Actions.PlaceOnRectangle(this.tileGrid.flat(1), rect);
+        let tiles = this.tileGrid.flat(1);
+        Phaser.Actions.PlaceOnRectangle(tiles, rect);
         this.launchConfetti();
+        let lastShift = 0;
         this.scene.tweens.add({
             targets: rect,
             width: 0,
@@ -105,12 +107,11 @@ export class TileGridManager {
             ease: 'Cubic.easeInOut',
             duration: 3000,
             repeat: 0,
-            // onUpdate: () => {
-            //     angle += 0.02;
-            //     Phaser.Actions.RotateAroundDistance(this.tileGrid.flat(), {x: centerX, y: centerY}, angle, Math.max(rect.width, rect.height) / 2);
-            // }
+            onUpdate: () => {
+                // console.log(this.scene.sys.game.loop.delta);
+            }
         }
-        ).on('complete', () => {
+        ).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
             this.returnToGrid();
         });
     }
@@ -130,7 +131,7 @@ export class TileGridManager {
                     repeat: 0,
                     delay: y * 50 + x * 100,
                     yoyo: false,
-                }).on('complete', () => {
+                }).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
                     if (y === this.tileGrid.length - 1 && x === this.tileGrid[y].length - 1) {
                         this.scene.events.emit('tileGridTransitionComplete');
                     }

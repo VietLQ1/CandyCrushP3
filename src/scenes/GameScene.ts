@@ -37,6 +37,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   init(): void {
+    this.sound.play('bgm', { loop: true, volume: 0.5 });
     // Init variables
     this.canMove = false;
     this.tweenManager = new TweenSyncManager(this);
@@ -989,7 +990,7 @@ export class GameScene extends Phaser.Scene {
   public update(time: number, delta: number): void {
     // console.log(this.gameState);
     // this.tileGrid![0][1].setAlpha(0.5);
-    console.log(this.tweens.getTweens());
+    // console.log(this.tweens.getTweens());
     if (
       this.gameState == GameState.IDLING &&
       this.canMove &&

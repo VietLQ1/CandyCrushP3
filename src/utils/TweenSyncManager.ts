@@ -31,12 +31,25 @@ export class TweenSyncManager{
         }
         let ignorable: boolean = true;
         for (let tween of this.allTweens){
-            if(tween.totalTargets == 1){
-                ignorable = false;
+            
+            for(let data of tween.data as Phaser.Tweens.TweenData[]){
+                // console.log(data.key);
+                if (data.key !== 'rotation' ){
+                    // console.log(data.key);
+                    ignorable = false;
+                    break;
+                }
+            }
+            if (!ignorable){
                 break;
             }
+            // if(tween.totalTargets == 1){
+            //     ignorable = false;
+            //     break;
+            // }
         }
         if(ignorable && !this.emitted){
+            console.log('ignorable');
             this.scene.events.emit('tweensComplete');
         }
     }
