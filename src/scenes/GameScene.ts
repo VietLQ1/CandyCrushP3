@@ -712,41 +712,7 @@ export class GameScene extends Phaser.Scene {
         }
       }
     }
-    else if (tile.special == 'rainbow') {
-      for (let y = 0; y < this.tileGrid!.length; y++) {
-        for (let x = 0; x < this.tileGrid![y].length; x++) {
-          let tile1 = this.tileGrid![y][x];
-          if (tile1 && tile1 !== tile && tile1.texture.key === tile.texture.key) {
-            let grouped = false;
-            matches.forEach(match => {
-              if (match.indexOf(tile1) !== -1) {
-                grouped = true;
-              }
-            });
-            if (!grouped) {
-              matches.push([tile1]);
-            }
-          }
-        }
-      }
-    }
     else if (tile.special == 'fullboard') {
-      // for (let y = 0; y < this.tileGrid!.length; y++) {
-      //   for (let x = 0; x < this.tileGrid![y].length; x++) {
-      //     let tile1 = this.tileGrid![y][x];
-      //     if (tile1 && tile1 !== tile) {
-      //       let grouped = false;
-      //       matches.forEach(match => {
-      //         if (match.indexOf(tile1) !== -1) {
-      //           grouped = true;
-      //         }
-      //       });
-      //       if (!grouped) {
-      //         matches.push([tile1]);
-      //       }
-      //     }
-      //   }
-      // }
       let check: boolean[][] = [];
       for (let y = 0; y < this.tileGrid!.length; y++) {
         check[y] = [];
@@ -784,6 +750,49 @@ export class GameScene extends Phaser.Scene {
             }
           });
           if (!grouped) {
+            matches.push([tempTile!]);
+          }
+        }
+      }
+    }
+    else if (tile.special == 'rainbow') {
+      let check: boolean[][] = [];
+      for (let y = 0; y < this.tileGrid!.length; y++) {
+        check[y] = [];
+        for (let x = 0; x < this.tileGrid![y].length; x++) {
+          check[y][x] = false;
+        }
+      }
+      let queue: Tile[] = [];
+      queue.push(tile);
+      check[tilePos.y][tilePos.x] = true;
+      while (queue.length > 0) {
+        let tempTile = queue.shift();
+        let tempPos = this.getTilePos(this.tileGrid!, tempTile!);
+        if (tempTile && tempPos.x != -1 && tempPos.y != -1) {
+          if (tempPos.x - 1 >= 0 && !check[tempPos.y][tempPos.x - 1]) {
+            queue.push(this.tileGrid![tempPos.y][tempPos.x - 1]);
+            check[tempPos.y][tempPos.x - 1] = true;
+          }
+          if (tempPos.x + 1 < this.tileGrid![tempPos.y].length && !check[tempPos.y][tempPos.x + 1]) {
+            queue.push(this.tileGrid![tempPos.y][tempPos.x + 1]);
+            check[tempPos.y][tempPos.x + 1] = true;
+          }
+          if (tempPos.y - 1 >= 0 && !check[tempPos.y - 1][tempPos.x]) {
+            queue.push(this.tileGrid![tempPos.y - 1][tempPos.x]);
+            check[tempPos.y - 1][tempPos.x] = true;
+          }
+          if (tempPos.y + 1 < this.tileGrid!.length && !check[tempPos.y + 1][tempPos.x]) {
+            queue.push(this.tileGrid![tempPos.y + 1][tempPos.x]);
+            check[tempPos.y + 1][tempPos.x] = true;
+          }
+          let grouped = false;
+          matches.forEach(match => {
+            if (match.indexOf(tempTile!) !== -1) {
+              grouped = true;
+            }
+          });
+          if (!grouped && tempTile.texture.key === tile.texture.key) {
             matches.push([tempTile!]);
           }
         }
