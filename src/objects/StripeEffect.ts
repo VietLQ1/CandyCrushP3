@@ -12,6 +12,7 @@ export class StripeEffect extends TileEffect
     }
     public playEffect(): void
     {
+        this.scene.sound.play('swosh', { volume: 0.2 });
         let effectTween: Phaser.Tweens.Tween | undefined;
         switch(this.direction)
         {

@@ -29,7 +29,7 @@ export class TileAnimationHandler
         {
             return;
         }
-        this.scene.sound.play('explosion', { volume: 0.069 });
+        this.scene.sound.play('explosion', { volume: 0.0269 });
         this.scene.add.particles(tile.x + CONST.tileWidth / 2, tile.y + CONST.tileHeight / 2, tile.texture.key, {
             speed: 100,
             lifespan: 500,

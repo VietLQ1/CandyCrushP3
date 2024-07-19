@@ -44,6 +44,7 @@ export class BootScene extends Phaser.Scene {
     this.load.audio('bgm', './assets/audio/bgm.mp3');
     this.load.audio('confetti', './assets/audio/confettiBurst.wav');
     this.load.audio('explosion', './assets/audio/explodeFX.mp3');
+    this.load.audio('swosh', './assets/audio/swosh.mp3');
   }
 
   update(): void {
