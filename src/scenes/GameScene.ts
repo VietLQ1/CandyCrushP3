@@ -795,6 +795,23 @@ export class GameScene extends Phaser.Scene {
           });
           if (!grouped && tempTile.texture.key === tile.texture.key) {
             matches.push([tempTile!]);
+            let particle = this.add.particles(tile.x, tile.y, 'blue', {
+              speed: { min: -100, max: 100 },
+              lifespan: 300,
+              scale: { start: 0.15, end: 0, ease: 'Sine.easeIn' },
+              blendMode: 'ADD',
+          })
+            this.tweenManager.createTween({
+              targets: particle,
+              x: tempTile.x + 32,
+              y: tempTile.y + 32,
+              duration: 500,
+              delay: matches.indexOf([tempTile!]) * 50,
+              repeat: 0,
+              yoyo: false
+            }).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
+              particle.stop();
+            });
           }
         }
       }
