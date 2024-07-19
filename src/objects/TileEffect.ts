@@ -9,6 +9,6 @@ export class TileEffect
     }
     public playEffect(): void
     {
-        
+        this.effect.setDepth(2);
     }
 }
