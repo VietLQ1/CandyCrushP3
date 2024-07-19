@@ -25,10 +25,23 @@ export class TileGridManager {
                     duration: 500,
                     repeat: 0,
                     delay: i * 30 + j * 20,
-                }).on('complete', () => {
+                }).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
                     if (i === this.tileGrid.length - 1 && j === this.tileGrid[i].length - 1) {
-                        this.spinCicle();
-                        // this.spinRectangle();
+                        let random = Phaser.Math.RND.between(0, 3);
+                        switch (random) {
+                            case 0:
+                                this.spinCicle();
+                                break;
+                            case 1:
+                                this.spinRectangle();
+                                break;
+                            case 2:
+                                this.spinTriangle();
+                                break;
+                            case 3:
+                                this.spinPolygon();
+                                break;
+                        }
                     }
                 });
             }
@@ -45,7 +58,7 @@ export class TileGridManager {
                     delay: i * 50,
                     repeat: 0,
                     yoyo: true,
-                }).on('complete', () => {
+                }).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
                     if (i === this.tileGrid.length - 1 && j === this.tileGrid[i].length - 1) {
                         this.scene.events.emit('tileGridIdleComplete');
                     }
@@ -99,9 +112,39 @@ export class TileGridManager {
         let tiles = this.tileGrid.flat(1);
         Phaser.Actions.PlaceOnRectangle(tiles, rect);
         this.launchConfetti();
-        let lastShift = 0;
+        // let lastShift = 0;
+        this.rotateAroundPath(tiles, rect);
+    }
+    private spinTriangle(): void {
+        const triangle = new Phaser.Geom.Triangle(224, 64, 32, 392, 416, 392);
+        let tiles = this.tileGrid.flat(1);
+        Phaser.Actions.PlaceOnTriangle(tiles, triangle);
+        this.launchConfetti();
+        this.rotateAroundPath(tiles, triangle);
+    }
+    private spinPolygon(): void {
+        const polygon = new Phaser.Geom.Polygon([
+            32, 32,
+            192, 416,
+            256, 416,
+            416, 32,
+            352, 32,
+            224, 352,
+            96, 32,
+        ]);
+        let tiles = this.tileGrid.flat(1);
+        let points = polygon.getPoints(tiles.length);
+        for (let i = 0; i < points.length; i++) {
+            tiles[i].x = points[i].x;
+            tiles[i].y = points[i].y;
+        }
+        // Phaser.Actions.PlaceOnPolygon(tiles, polygon);
+        this.launchConfetti();
+        this.rotateAroundPath(tiles, polygon);
+    }
+    private rotateAroundPath(tiles: Tile[], shape: Phaser.Geom.Rectangle | Phaser.Geom.Triangle | Phaser.Geom.Polygon): void {
         this.scene.tweens.add({
-            targets: rect,
+            targets: shape,
             width: 0,
             height: 0,
             ease: 'Cubic.easeInOut',
@@ -109,11 +152,30 @@ export class TileGridManager {
             repeat: 0,
             onUpdate: () => {
                 // console.log(this.scene.sys.game.loop.delta);
+                this.scene.tweens.add({
+                    targets: tiles[tiles.length - 1],
+                    x: tiles[0].x,
+                    y: tiles[0].y,
+                    ease: 'Sine.easeInOut',
+                    duration: this.scene.sys.game.loop.delta,
+                    repeat: 0,
+                });
+                for (let i = 0; i < tiles.length - 1; i++) {
+                    this.scene.tweens.add({
+                        targets: tiles[i],
+                        x: tiles[i + 1].x,
+                        y: tiles[i + 1].y,
+                        ease: 'Sine.easeInOut',
+                        duration: this.scene.sys.game.loop.delta,
+                        repeat: 0,
+                    });
+                }
             }
         }
         ).on(Phaser.Tweens.Events.TWEEN_COMPLETE, () => {
             this.returnToGrid();
         });
+
     }
     private returnToGrid(): void {
         for (let i = 0; i < this.tileGrid.length; i++) {

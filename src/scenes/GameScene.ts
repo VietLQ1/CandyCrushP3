@@ -37,7 +37,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   init(): void {
-    this.sound.play('bgm', { loop: true, volume: 0.5 });
+    this.sound.play('bgm', { loop: true, volume: 0.3 });
     // Init variables
     this.canMove = false;
     this.tweenManager = new TweenSyncManager(this);
