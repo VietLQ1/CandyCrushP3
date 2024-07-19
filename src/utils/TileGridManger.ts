@@ -202,6 +202,7 @@ export class TileGridManager {
         }
     }
     private launchConfetti(): void {
+        this.scene.sound.play('confetti');
         this.scene.add.particles(254, 254, 'raster',
             {
                 speedX: { min: -500, max: 500 },
